@@ -1,7 +1,8 @@
 import json
 import os
-import requests
 from datetime import datetime
+
+import requests
 
 
 def save_to_file(data, api_type):
@@ -78,11 +79,11 @@ class GoldAPI:
 
 
 if __name__ == "__main__":
-    btc_api_key = 'VERHHKYF2OE4HKK8'
-    gold_api_key = 'sk_59f2433F46BC20EcB6A6BF7317862e4cEF3abd16EB3d4058'
+    BTC_API_KEY = os.environ.get('BTC_API_KEY')
+    GOLD_API_KEY = os.environ.get('GOLD_API_KEY')
 
-    btc_client = BitcoinAPI(btc_api_key)
-    gold_client = GoldAPI(gold_api_key)
+    btc_client = BitcoinAPI(BTC_API_KEY)
+    gold_client = GoldAPI(GOLD_API_KEY)
 
     currencies = ['EUR', 'USD', 'GBP']
 
