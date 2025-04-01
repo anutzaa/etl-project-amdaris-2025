@@ -17,7 +17,6 @@ def save_to_file(data, api_type):
     file_name = f'{api_type}_{datetime.today().strftime("%Y%m%d")}.json'
     file_path = os.path.join(output_dir, file_name)
 
-    # If the file doesn't exist, initialize it and append the new data
     if os.path.exists(file_path):
         try:
             with open(file_path, 'r') as json_file:
