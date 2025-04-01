@@ -4,19 +4,20 @@ import json
 
 
 def save_to_file(data, api_type):
+    """
+    Saves API fetched data to a JSON file, appending it with a timestamp.
+    The file is stored in a directory based on the API (either 'btc' or 'gold').
+    """
+
     base_dir = '../../data/raw/'
 
     output_dir = os.path.join(base_dir, 'bitcoin' if api_type == 'btc' else 'gold')
-    file_name = f'{api_type}_{datetime.today().strftime("%Y%m%d")}.json'
-
     os.makedirs(output_dir, exist_ok=True)
+
+    file_name = f'{api_type}_{datetime.today().strftime("%Y%m%d")}.json'
     file_path = os.path.join(output_dir, file_name)
 
-    timestamped_data = {
-        "timestamp": datetime.now().isoformat(),
-        "data": data
-    }
-
+    # If the file doesn't exist, initialize it and append the new data
     if os.path.exists(file_path):
         try:
             with open(file_path, 'r') as json_file:
@@ -28,9 +29,17 @@ def save_to_file(data, api_type):
     else:
         existing_data = []
 
+    timestamped_data = {
+        "timestamp": datetime.now().isoformat(),
+        "data": data
+    }
+
     existing_data.append(timestamped_data)
 
     with open(file_path, 'w') as json_file:
         json.dump(existing_data, json_file, indent=4)
 
-    return file_path
+    file_created_date = datetime.fromtimestamp(os.path.getctime(file_path))
+    file_last_modified_date = datetime.fromtimestamp(os.path.getmtime(file_path))
+
+    return file_path, file_created_date, file_last_modified_date
