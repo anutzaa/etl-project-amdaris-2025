@@ -40,7 +40,7 @@ class BitcoinAPI:
 
     def call(self):
         start = datetime.now()
-        start_time = start.strftime("%Y-%m-%d %H:%M:%S")
+        start_time = start.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
 
         currencies = self.conn.get_currencies()
 
@@ -53,7 +53,7 @@ class BitcoinAPI:
             self.conn.log_api_import(currency_id, 'BTC', start_time, response_code, error_message)
 
         end = datetime.now()
-        end_time = end.strftime("%Y-%m-%d %H:%M:%S")
+        end_time = end.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
 
         for currency in currencies:
             currency_id = currency[0]
