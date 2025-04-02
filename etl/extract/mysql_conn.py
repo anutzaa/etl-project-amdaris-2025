@@ -1,5 +1,6 @@
 import mysql.connector
 from datetime import datetime
+
 from logger import logger
 
 
@@ -22,13 +23,11 @@ class MySQLConnector:
                     port=self.port,
                     user=self.user,
                     password=self.password,
-                    database=self.database
+                    database=self.database,
                 )
             else:
                 self.connection = mysql.connector.connect(
-                    host=self.host,
-                    user=self.user,
-                    password=self.password
+                    host=self.host, user=self.user, password=self.password
                 )
             self.cursor = self.connection.cursor()
             logger.info(f"Connected to MySQL database: {self.database}")
@@ -66,33 +65,66 @@ class MySQLConnector:
         logger.warning(f"No currency found for code: {code}")
         return None
 
-    def log_import(self, currency_id, import_directory_name, import_file_name,
-                   file_created_date, file_last_modified_date, row_count):
-        logger.debug(f"Logging import for currency_id: {currency_id}, file: {import_file_name}, rows: {row_count}")
+    def log_import(
+        self,
+        currency_id,
+        import_directory_name,
+        import_file_name,
+        file_created_date,
+        file_last_modified_date,
+        row_count,
+    ):
+        logger.debug(
+            f"Logging import for currency_id: {currency_id}, file: {import_file_name}, rows: {row_count}"
+        )
         query = """
         INSERT INTO import_log (batch_date, currency_id, import_directory_name, import_file_name, 
         file_created_date, file_last_modified_date, row_count)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        values = (datetime.today(), currency_id, import_directory_name, import_file_name,
-                  file_created_date, file_last_modified_date, row_count)
+        values = (
+            datetime.today(),
+            currency_id,
+            import_directory_name,
+            import_file_name,
+            file_created_date,
+            file_last_modified_date,
+            row_count,
+        )
         self.cursor.execute(query, values)
         self.connection.commit()
         logger.debug("Import logged successfully")
 
-    def log_api_import(self, currency_id, api_id, start_time, code_response, error_messages=None):
-        logger.debug(f"Logging API import for currency_id: {currency_id}, api_id: {api_id}")
+    def log_api_import(
+        self,
+        currency_id,
+        api_id,
+        start_time,
+        code_response,
+        error_messages=None,
+    ):
+        logger.debug(
+            f"Logging API import for currency_id: {currency_id}, api_id: {api_id}"
+        )
         query = """
         INSERT INTO api_import_log (currency_id, api_id, start_time, code_response, error_messages)
         VALUES (%s, %s, %s, %s, %s)
         """
-        values = (currency_id, api_id, start_time, code_response, error_messages)
+        values = (
+            currency_id,
+            api_id,
+            start_time,
+            code_response,
+            error_messages,
+        )
         self.cursor.execute(query, values)
         self.connection.commit()
         logger.debug("API import logged successfully")
 
     def log_api_import_end(self, currency_id, api_id, start_time, end_time):
-        logger.debug(f"Updating API import end time for currency_id: {currency_id}, api_id: {api_id}")
+        logger.debug(
+            f"Updating API import end time for currency_id: {currency_id}, api_id: {api_id}"
+        )
         query = """
         UPDATE api_import_log
         SET end_time = %s
@@ -102,4 +134,6 @@ class MySQLConnector:
         self.cursor.execute(query, values)
         rows_affected = self.cursor.rowcount
         self.connection.commit()
-        logger.debug(f"API import end time updated successfully. Rows affected: {rows_affected}")
+        logger.debug(
+            f"API import end time updated successfully. Rows affected: {rows_affected}"
+        )
