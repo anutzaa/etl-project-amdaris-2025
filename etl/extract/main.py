@@ -31,4 +31,5 @@ if __name__ == "__main__":
     btc_client = BitcoinAPI(BTC_API_KEY, conn)
     btc_client.call()
 
-#   gold_client = GoldAPI(GOLD_API_KEY)
+    gold_client = GoldAPI(GOLD_API_KEY, conn)
+    gold_client.call()

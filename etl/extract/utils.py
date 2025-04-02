@@ -28,12 +28,7 @@ def save_to_file(data, api_type):
     else:
         existing_data = []
 
-    timestamped_data = {
-        "timestamp": datetime.now().isoformat(),
-        "data": data
-    }
-
-    existing_data.append(timestamped_data)
+    existing_data.append(data)
 
     with open(file_path, 'w') as json_file:
         json.dump(existing_data, json_file, indent=4)
