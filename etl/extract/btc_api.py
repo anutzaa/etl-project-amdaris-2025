@@ -2,7 +2,7 @@ from datetime import datetime
 import requests
 import os
 
-from utils import save_to_file
+from utils import save_to_file, process_api_response
 from mysql_conn import MySQLConnector
 from logger import logger
 
@@ -25,17 +25,7 @@ class BitcoinAPI:
         logger.debug(f"Making API request to {self.base_url} with params: {params}")
         response = requests.get(self.base_url, params=params)
 
-        response_code = response.status_code
-        error_message = response.text if response_code != 200 else None
-
-        if response_code != 200:
-            logger.warning(f"API request failed with status code {response_code}: {error_message}")
-        else:
-            logger.debug("API request successful")
-
-        response.raise_for_status()
-        data = response.json()
-        logger.debug("API response parsed successfully")
+        response_code, error_message, data = process_api_response(response)
 
         logger.debug("Saving data to file")
         file_path, file_created_date, file_last_modified_date = save_to_file(data, 'btc')

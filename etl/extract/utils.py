@@ -18,6 +18,24 @@ def extract_date_from_timestamp(data):
     return None
 
 
+def process_api_response(response):
+    """Process an API response: extract status code, handle errors, parse JSON."""
+
+    response_code = response.status_code
+    error_message = response.text if response_code != 200 else None
+
+    if response_code != 200:
+        logger.warning(f"API request failed with status code {response_code}: {error_message}")
+    else:
+        logger.debug("API request successful")
+
+    response.raise_for_status()
+    data = response.json()
+    logger.debug("API response parsed successfully")
+
+    return response_code, error_message, data
+
+
 def save_to_file(data, api_type):
     """
        Saves API fetched data to a JSON file, appending it with a timestamp.
@@ -75,12 +93,12 @@ def save_to_file(data, api_type):
 
     elif api_type == 'btc':
         new_last_refreshed = data.get("Meta Data", {}).get("6. Last Refreshed", "")
-        new_currency = data.get("Meta Data", {}).get("3. Digital Currency Name", "")
+        new_currency = data.get("Meta Data", {}).get("4. Market Code", "")
         logger.debug(f"Checking for duplicate BTC data: last_refreshed={new_last_refreshed}, currency={new_currency}")
 
         for item in existing_data:
             existing_last_refreshed = item.get("Meta Data", {}).get("6. Last Refreshed", "")
-            existing_currency = item.get("Meta Data", {}).get("3. Digital Currency Name", "")
+            existing_currency = item.get("Meta Data", {}).get("4. Market Code", "")
 
             if existing_last_refreshed == new_last_refreshed and existing_currency == new_currency:
                 logger.info(f"Duplicate BTC data found for last_refreshed={new_last_refreshed}, currency={new_currency}")
