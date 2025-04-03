@@ -7,6 +7,7 @@ from logger import logger
 
 def extract_date_from_timestamp(data):
     """Extracts date (YYYY-MM-DD) from timestamp in the JSON data file."""
+
     logger.debug("Extracting date from timestamp")
     if isinstance(data, dict) and "timestamp" in data:
         timestamp = data["timestamp"]

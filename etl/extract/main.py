@@ -43,4 +43,7 @@ if __name__ == "__main__":
     gold_client.call()
     logger.info("Gold API data extraction complete")
 
+    conn.disconnect()
+    logger.info("Connection to MySQL database closed")
+
     logger.info("ETL process completed successfully")

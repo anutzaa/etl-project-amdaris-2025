@@ -35,11 +35,6 @@ class MySQLConnector:
             logger.info(f"Error connecting to MySQL: {error}")
             self.connection = None
 
-    def is_connected(self):
-        if self.connection and self.connection.is_connected():
-            return True
-        return False
-
     def disconnect(self):
         if self.connection:
             self.connection.close()
