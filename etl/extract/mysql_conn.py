@@ -95,6 +95,7 @@ class MySQLConnector:
         currency_id,
         api_id,
         start_time,
+        end_time,
         code_response,
         error_messages=None,
     ):
@@ -102,33 +103,17 @@ class MySQLConnector:
             f"Logging API import for currency_id: {currency_id}, api_id: {api_id}"
         )
         query = """
-        INSERT INTO api_import_log (currency_id, api_id, start_time, code_response, error_messages)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO api_import_log (currency_id, api_id, start_time, end_time, code_response, error_messages)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """
         values = (
             currency_id,
             api_id,
             start_time,
+            end_time,
             code_response,
             error_messages,
         )
         self.cursor.execute(query, values)
         self.connection.commit()
         logger.debug("API import logged successfully")
-
-    def log_api_import_end(self, currency_id, api_id, start_time, end_time):
-        logger.debug(
-            f"Updating API import end time for currency_id: {currency_id}, api_id: {api_id}"
-        )
-        query = """
-        UPDATE api_import_log
-        SET end_time = %s
-        WHERE currency_id = %s AND api_id = %s AND start_time = %s
-        """
-        values = (end_time, currency_id, api_id, start_time)
-        self.cursor.execute(query, values)
-        rows_affected = self.cursor.rowcount
-        self.connection.commit()
-        logger.debug(
-            f"API import end time updated successfully. Rows affected: {rows_affected}"
-        )

@@ -27,7 +27,14 @@ class GoldAPI:
         logger.debug(
             f"Making API request to {self.base_url} with params: {params}"
         )
+
+        start = datetime.now()
+        start_time = start.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
+
         response = requests.get(self.base_url, params=params, headers=headers)
+
+        end = datetime.now()
+        end_time = end.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
 
         response_code, error_message, data = process_api_response(response)
 
@@ -54,13 +61,10 @@ class GoldAPI:
         else:
             logger.error(f"Could not find currency_id for symbol: {symbol}")
 
-        return response_code, error_message
+        return start_time, end_time, response_code, error_message
 
     def call(self):
         logger.info("Starting Gold data extraction process")
-        start = datetime.now()
-        start_time = start.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
-        logger.debug(f"Process start time: {start_time}")
 
         currencies = self.conn.get_currencies()
         logger.info(f"Processing {len(currencies)} currencies for Gold data")
@@ -73,7 +77,7 @@ class GoldAPI:
             )
 
             try:
-                response_code, error_message = self.get_gold_data(
+                start_time, end_time, response_code, error_message = self.get_gold_data(
                     currency_code
                 )
                 logger.debug(f"API response code: {response_code}")
@@ -81,6 +85,7 @@ class GoldAPI:
                     currency_id,
                     'XAU',
                     start_time,
+                    end_time,
                     response_code,
                     error_message,
                 )
@@ -89,17 +94,5 @@ class GoldAPI:
                     f"Error processing Gold data for {currency_code}: {str(e)}",
                     exc_info=True,
                 )
-
-        end = datetime.now()
-        duration = end - start
-        end_time = end.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
-        logger.debug(f"Process end time: {end_time}, Duration: {duration}")
-
-        logger.info("Updating API import end times")
-        for currency in currencies:
-            currency_id = currency[0]
-            self.conn.log_api_import_end(
-                currency_id, 'XAU', start_time, end_time
-            )
 
         logger.info("Gold data extraction process completed")
