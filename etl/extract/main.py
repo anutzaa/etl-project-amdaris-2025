@@ -8,7 +8,7 @@ from mysql_conn import MySQLConnector
 from logger import logger
 
 if __name__ == "__main__":
-    logger.info("Starting ETL")
+    logger.info("Starting Extract process")
 
     load_dotenv()
     logger.debug("Environment variables loaded")
@@ -46,4 +46,4 @@ if __name__ == "__main__":
     conn.disconnect()
     logger.info("Connection to MySQL database closed")
 
-    logger.info("ETL process completed successfully")
+    logger.info("Extract process completed successfully")

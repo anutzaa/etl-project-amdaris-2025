@@ -1,6 +1,12 @@
 create database etlproject;
 
 
+drop table if exists api;
+drop table if exists api_import_log;
+drop table if exists currency;
+drop table if exists import_log;
+
+
 create table currency (
     Id int auto_increment primary key,
     code varchar(3) unique not null,
@@ -24,8 +30,6 @@ insert into api
 values ('BTC','BitcoinAPI'),
        ('XAU', 'GoldAPI');
 
-drop table if exists api_import_log;
-drop table if exists import_log;
 
 create table import_log(
     Id int auto_increment primary key,

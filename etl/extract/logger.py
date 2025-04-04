@@ -8,8 +8,8 @@ def setup_logger():
 
     log_dir = os.path.join(
         os.getcwd(), 'logs'
-    )  # Use current working directory for logs
-    os.makedirs(log_dir, exist_ok=True)  # Ensure the log directory exists
+    )
+    os.makedirs(log_dir, exist_ok=True)
 
     logger = logging.getLogger('etl_app')
     logger.setLevel(logging.DEBUG)
