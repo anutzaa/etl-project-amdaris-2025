@@ -24,13 +24,15 @@ insert into api
 values ('BTC','BitcoinAPI'),
        ('XAU', 'GoldAPI');
 
+drop table if exists api_import_log;
+drop table if exists import_log;
 
 create table import_log(
     Id int auto_increment primary key,
     batch_date date not null,
     currency_id int,
     import_directory_name varchar(50) not null,
-    import_file_name varchar(20) not null,
+    import_file_name varchar(50) not null,
     file_created_date timestamp(4) not null,
     file_last_modified_date timestamp(4),
     row_count int,
