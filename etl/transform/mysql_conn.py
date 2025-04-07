@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from etl.extract.mysql_conn import MySQLConnector
 
 
@@ -39,7 +41,6 @@ class MySQLConnectorTransform(MySQLConnector):
         self.connection.commit()
 
     def log_transform(self,
-                      batch_date,
                       currency_id,
                       processed_directory_name,
                       processed_file_name,
@@ -50,7 +51,7 @@ class MySQLConnectorTransform(MySQLConnector):
               VALUES (%s, %s, %s, %s, %s, %s)
               """
         values = (
-            batch_date,
+            datetime.today(),
             currency_id,
             processed_directory_name,
             processed_file_name,
