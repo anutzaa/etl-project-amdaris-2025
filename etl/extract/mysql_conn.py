@@ -1,7 +1,7 @@
 import mysql.connector
 from datetime import datetime
 
-from logger import logger
+from etl.extract.logger import logger
 
 
 class MySQLConnector:
