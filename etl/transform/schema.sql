@@ -27,11 +27,9 @@ create table btc_data_import(
     low decimal(16,2) not null,
     close decimal(16,2) not null,
     volume decimal (20,8) not null,
-    foreign key (currency_id) references currency(Id) on delete set null
+    foreign key (currency_id) references currency(Id) on delete set null,
+    unique index idx_currency_date (currency_id, date)
 );
-
-alter table btc_data_import
-add unique index idx_currency_date (currency_id, date);
 
 
 create table gold_data_import(
@@ -45,5 +43,9 @@ create table gold_data_import(
     price_24k decimal(16,8),
     price_18k decimal(16,8),
     price_14k decimal(16,8),
-    foreign key (currency_id) references currency(Id) on delete set null
+    rate_usd decimal(6,5),
+    rate_eur decimal(6,5),
+    rate_gbp decimal(6,5),
+    foreign key (currency_id) references currency(Id) on delete set null,
+    unique index idx_currency_date (currency_id, date)
 );

@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 
 from etl.transform.btc_transform import BitcoinTransform
+from etl.transform.gold_transform import GoldTransform
 from etl.transform.mysql_conn import MySQLConnectorTransform
 
 if __name__ == '__main__':
@@ -25,5 +26,8 @@ if __name__ == '__main__':
 
     btc = BitcoinTransform(conn)
     btc.call()
+
+    gold = GoldTransform(conn)
+    gold.call()
 
     conn.disconnect()
