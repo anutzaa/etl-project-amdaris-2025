@@ -61,18 +61,18 @@ class GoldTransform:
                     continue
 
                 try:
-                    open_price = float(metal_prices.get("open", 0))
-                    high_price = float(metal_prices.get("high", 0))
-                    low_price = float(metal_prices.get("low", 0))
-                    price = float(metal_prices.get("price", 0))
+                    open_price = float(metal_prices.get("open"))
+                    high_price = float(metal_prices.get("high"))
+                    low_price = float(metal_prices.get("low"))
+                    price = float(metal_prices.get("price"))
 
-                    price_24k = float(metal_prices.get("price_24k", 0))
-                    price_18k = float(metal_prices.get("price_18k", 0))
-                    price_14k = float(metal_prices.get("price_14k", 0))
+                    price_24k = float(metal_prices.get("price_24k"))
+                    price_18k = float(metal_prices.get("price_18k"))
+                    price_14k = float(metal_prices.get("price_14k"))
 
-                    rate_usd = float(currency_rates.get("USD", 0))
-                    rate_eur = float(currency_rates.get("EUR", 0))
-                    rate_gbp = float(currency_rates.get("GBP", 0))
+                    rate_usd = float(currency_rates.get("USD"))
+                    rate_eur = float(currency_rates.get("EUR"))
+                    rate_gbp = float(currency_rates.get("GBP"))
 
                     self.conn.upsert_gold_data(
                         currency_id,
