@@ -30,6 +30,9 @@ create table btc_data_import(
     foreign key (currency_id) references currency(Id) on delete set null
 );
 
+alter table btc_data_import
+add unique index idx_currency_date (currency_id, date);
+
 
 create table gold_data_import(
     Id int auto_increment primary key,
