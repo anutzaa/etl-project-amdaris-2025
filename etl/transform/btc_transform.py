@@ -1,9 +1,9 @@
-import json
 import os
 from datetime import datetime
 
-from etl.transform.mysql_conn import MySQLConnectorTransform
-from etl.transform.utils import move_file
+from mysql_conn import MySQLConnectorTransform
+from utils import move_file, process_file, load_json_file
+from logger import logger
 
 
 class BitcoinTransform:
@@ -12,40 +12,45 @@ class BitcoinTransform:
         self.conn = conn
 
     def transform(self, file_path):
+        logger.info(f"Processing bitcoin file: {file_path}")
         data_type = "bitcoin"
         status = "error"
         processed_count = 0
         currency_id = None
 
         try:
-            with open(file_path, 'r') as f:
-                file_content = f.read()
+            data_list = load_json_file(file_path)
 
-                if file_content.strip().startswith('['):
-                    data_list = json.loads(file_content)
-                else:
-                    data_list = [json.loads(file_content)]
+            if data_list is None:
+                return
 
             for data in data_list:
                 meta = data.get("Meta Data", {})
                 if not meta:
+                    logger.warning(f"No Meta Data found in file: {file_path}")
                     continue
 
                 currency_code = meta.get("4. Market Code", "")
                 if not currency_code:
+                    logger.warning(f"No Market Code found in file: {file_path}")
                     continue
 
+                logger.debug(f"Processing data for currency code: {currency_code}")
                 currency_id = self.conn.get_currency_by_code(currency_code)
                 if not currency_id:
+                    logger.warning(f"No currency ID found for code: {currency_code}")
                     continue
 
                 time_series = data.get("Time Series (Digital Currency Daily)", {})
                 if not time_series:
+                    logger.warning(f"No Time Series data found in file: {file_path}")
                     continue
 
+                logger.debug(f"Processing {len(time_series)} time series entries")
                 for date_str, daily_data in time_series.items():
                     try:
                         date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                        logger.debug(f"Processing data for date: {date}")
 
                         open_price = float(daily_data.get("1. open"))
                         high = float(daily_data.get("2. high"))
@@ -53,6 +58,7 @@ class BitcoinTransform:
                         close = float(daily_data.get("4. close"))
                         volume = float(daily_data.get("5. volume"))
 
+                        logger.debug(f"Upserting bitcoin data for currency_id {currency_id}, date {date}")
                         self.conn.upsert_btc_data(
                             currency_id,
                             date,
@@ -65,20 +71,21 @@ class BitcoinTransform:
 
                         processed_count += 1
                     except Exception as e:
-                        print(f"Error processing date {date_str}: {str(e)}")
+                        logger.error(f"Error processing date {date_str}: {str(e)}", exc_info=True)
 
             if processed_count > 0:
                 status = "processed"
-                print(f"Successfully processed {processed_count} data points from file: {file_path}")
+                logger.info(f"Successfully processed {processed_count} data points from file: {file_path}")
             else:
-                print(f"No data processed from file: {file_path}")
+                logger.warning(f"No data processed from file: {file_path}")
 
         except Exception as e:
-            print(f"Error processing file {file_path}: {str(e)}")
+            logger.error(f"Error processing file {file_path}: {str(e)}", exc_info=True)
             status = "error"
 
         new_file_path = move_file(status, data_type, file_path)
 
+        logger.info(f"Logging transformation for file {file_path}")
         self.conn.log_transform(
             currency_id,
             os.path.dirname(new_file_path),
@@ -88,10 +95,4 @@ class BitcoinTransform:
         )
 
     def call(self):
-        if not os.path.exists(self.directory):
-            return
-
-        files = [f for f in os.listdir(self.directory) if f.endswith(".json")]
-        for file in files:
-            file_path = os.path.join(self.directory, file)
-            self.transform(file_path)
+        process_file('Bitcoin', self.directory, self.transform)
