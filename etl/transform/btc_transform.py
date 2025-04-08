@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from etl.transform.mysql_conn import MySQLConnectorTransform
 from etl.transform.utils import move_file
@@ -15,6 +15,7 @@ class BitcoinTransform:
         data_type = "bitcoin"
         status = "error"
         processed_count = 0
+        currency_id = None
 
         try:
             with open(file_path, 'r') as f:
@@ -46,19 +47,19 @@ class BitcoinTransform:
                     try:
                         date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
-                        open_price = float(daily_data.get("1. open", 0))
-                        high_price = float(daily_data.get("2. high", 0))
-                        low_price = float(daily_data.get("3. low", 0))
-                        close_price = float(daily_data.get("4. close", 0))
-                        volume = float(daily_data.get("5. volume", 0))
+                        open_price = float(daily_data.get("1. open"))
+                        high = float(daily_data.get("2. high"))
+                        low = float(daily_data.get("3. low"))
+                        close = float(daily_data.get("4. close"))
+                        volume = float(daily_data.get("5. volume"))
 
                         self.conn.upsert_btc_data(
                             currency_id,
                             date,
                             open_price,
-                            high_price,
-                            low_price,
-                            close_price,
+                            high,
+                            low,
+                            close,
                             volume
                         )
 
@@ -67,13 +68,6 @@ class BitcoinTransform:
                         print(f"Error processing date {date_str}: {str(e)}")
 
             if processed_count > 0:
-                self.conn.log_transform(
-                    currency_id,
-                    os.path.dirname(file_path),
-                    os.path.basename(file_path),
-                    processed_count,
-                    "SUCCESS"
-                )
                 status = "processed"
                 print(f"Successfully processed {processed_count} data points from file: {file_path}")
             else:
@@ -83,7 +77,15 @@ class BitcoinTransform:
             print(f"Error processing file {file_path}: {str(e)}")
             status = "error"
 
-        move_file(status, data_type, file_path)
+        new_file_path = move_file(status, data_type, file_path)
+
+        self.conn.log_transform(
+            currency_id,
+            os.path.dirname(new_file_path),
+            os.path.basename(new_file_path),
+            processed_count,
+            status
+        )
 
     def call(self):
         if not os.path.exists(self.directory):

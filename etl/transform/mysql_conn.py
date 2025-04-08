@@ -4,26 +4,9 @@ from etl.extract.mysql_conn import MySQLConnector
 
 
 class MySQLConnectorTransform(MySQLConnector):
-    def insert_btc_data(self, currency_id, date, open, high, low, close, volume):
-        query = """
-                INSERT INTO btc_data_import (currency_id, date, open, high, low, close, volume)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """
-        values = (
-            currency_id,
-            date,
-            open,
-            high,
-            low,
-            close,
-            volume
-        )
-        self.cursor.execute(query, values)
-        self.connection.commit()
-
     def upsert_btc_data(self, currency_id, date, open, high, low, close, volume):
         try:
-            upsert_query = """
+            query = """
             INSERT INTO btc_data_import (currency_id, date, open, high, low, close, volume)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE 
@@ -33,10 +16,9 @@ class MySQLConnectorTransform(MySQLConnector):
                 close = VALUES(close),
                 volume = VALUES(volume)
             """
-            self.cursor.execute(upsert_query, (
-                currency_id, date, open, high, low, close, volume
-            ))
+            values = (currency_id, date, open, high, low, close, volume)
 
+            self.cursor.execute(query, values)
             self.connection.commit()
 
             if self.cursor.rowcount == 1:

@@ -5,18 +5,20 @@ import logging
 
 def move_file(status, data_type, file_path):
     """
-    Moves the file to the appropriate directory based on processing status.
+    Move a file to either the processed or error directory.
     """
-    if status not in ["processed", "error"]:
-        return False
 
-    dest_dir = f"../../data/{status}/{data_type}"
-    os.makedirs(dest_dir, exist_ok=True)
+    base_dir = os.path.normpath("../../data")
 
-    dest_file_path = os.path.join(dest_dir, os.path.basename(file_path))
+    target_dir = os.path.join(base_dir, status, data_type)
+    os.makedirs(target_dir, exist_ok=True)
 
-    try:
-        shutil.move(file_path, dest_file_path)
-        return True
-    except Exception as e:
-        return False
+    filename = os.path.basename(file_path)
+
+    new_file_path = os.path.join(target_dir, filename)
+
+    os.rename(file_path, new_file_path)
+
+    print(f"Moved file from {file_path} to {new_file_path}")
+
+    return new_file_path
