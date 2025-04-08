@@ -7,7 +7,7 @@ from gold_transform import GoldTransform
 from mysql_conn import MySQLConnectorTransform
 from logger import logger
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger.info("Starting Transform process")
 
     load_dotenv()
@@ -20,12 +20,7 @@ if __name__ == '__main__':
     DB_DATABASE = os.getenv("DB_DATABASE")
 
     logger.info("Connecting to MySQL database")
-    conn = MySQLConnectorTransform(host=DB_HOST,
-                                   port=DB_PORT,
-                                   user=DB_USER,
-                                   password=DB_PASSWORD,
-                                   database=DB_DATABASE
-                                   )
+    conn = MySQLConnectorTransform(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
 
     conn.connect()
 

@@ -52,11 +52,11 @@ def process_file(data_type, directory, transform_func):
 
 def load_json_file(file_path):
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             file_content = f.read()
             logger.debug("File content loaded")
 
-            if file_content.strip().startswith('['):
+            if file_content.strip().startswith("["):
                 data_list = json.loads(file_content)
                 logger.debug(f"Loaded JSON array with {len(data_list)} items")
             else:

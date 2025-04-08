@@ -59,15 +59,7 @@ class BitcoinTransform:
                         volume = float(daily_data.get("5. volume"))
 
                         logger.debug(f"Upserting bitcoin data for currency_id {currency_id}, date {date}")
-                        self.conn.upsert_btc_data(
-                            currency_id,
-                            date,
-                            open_price,
-                            high,
-                            low,
-                            close,
-                            volume
-                        )
+                        self.conn.upsert_btc_data(currency_id, date, open_price, high, low, close, volume)
 
                         processed_count += 1
                     except Exception as e:
@@ -87,12 +79,8 @@ class BitcoinTransform:
 
         logger.info(f"Logging transformation for file {file_path}")
         self.conn.log_transform(
-            currency_id,
-            os.path.dirname(new_file_path),
-            os.path.basename(new_file_path),
-            processed_count,
-            status
+            currency_id, os.path.dirname(new_file_path), os.path.basename(new_file_path), processed_count, status
         )
 
     def call(self):
-        process_file('Bitcoin', self.directory, self.transform)
+        process_file("Bitcoin", self.directory, self.transform)

@@ -88,7 +88,7 @@ class GoldTransform:
                         price_14k,
                         rate_usd,
                         rate_eur,
-                        rate_gbp
+                        rate_gbp,
                     )
 
                     processed_count += 1
@@ -109,12 +109,8 @@ class GoldTransform:
 
         logger.info(f"Logging transformation for file {file_path}")
         self.conn.log_transform(
-            currency_id,
-            os.path.dirname(new_file_path),
-            os.path.basename(new_file_path),
-            processed_count,
-            status
+            currency_id, os.path.dirname(new_file_path), os.path.basename(new_file_path), processed_count, status
         )
 
     def call(self):
-        process_file('Gold', self.directory, self.transform)
+        process_file("Gold", self.directory, self.transform)
