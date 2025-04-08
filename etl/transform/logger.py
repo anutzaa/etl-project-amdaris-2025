@@ -6,7 +6,7 @@ from datetime import datetime
 def setup_logger():
     """Configure and return a logger for the app"""
 
-    log_dir = os.path.join(os.getcwd(), "logs")
+    log_dir = "../transform/logs"
     os.makedirs(log_dir, exist_ok=True)
 
     logger = logging.getLogger("transform")
