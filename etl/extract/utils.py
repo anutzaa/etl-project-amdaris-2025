@@ -5,22 +5,6 @@ import json
 from logger import logger
 
 
-def extract_date_from_timestamp(data):
-    """Extracts date (YYYY-MM-DD) from timestamp in the JSON data file."""
-
-    logger.debug("Extracting date from timestamp")
-    if isinstance(data, dict) and "timestamp" in data:
-        timestamp = data["timestamp"]
-        if isinstance(timestamp, (int, float)):
-            date_str = datetime.utcfromtimestamp(timestamp / 1000).strftime(
-                "%Y-%m-%d"
-            )
-            logger.debug(f"Extracted date: {date_str}")
-            return date_str
-    logger.debug("Could not extract date from timestamp")
-    return None
-
-
 def process_api_response(response):
     """Process an API response: extract status code, handle errors, parse JSON."""
 

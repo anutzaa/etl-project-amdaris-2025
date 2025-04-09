@@ -176,5 +176,6 @@ pyrightconfig.json
 # Data folder
 data/
 
-#Logs folder
-etl/extract/logs/
+# Logs folders
+/etl/extract/logs/
+/etl/transform/logs/
