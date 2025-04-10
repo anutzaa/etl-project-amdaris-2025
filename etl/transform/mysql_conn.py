@@ -115,3 +115,25 @@ class MySQLConnectorTransform(MySQLConnector):
             self.connection.rollback()
             logger.error(f"Error in log_transform: {str(e)}", exc_info=True)
             return False
+
+    def truncate_import_tables(self):
+        tables = ['btc_data_import', 'gold_data_import']
+        logger.info(f"Truncating import tables")
+
+        try:
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
+
+            for table in tables:
+                logger.debug(f"Truncating table: {table}")
+                self.cursor.execute(f"TRUNCATE TABLE {table}")
+
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
+
+            self.connection.commit()
+            logger.info("All import tables truncated successfully")
+            return True
+
+        except Exception as e:
+            self.connection.rollback()
+            logger.error(f"Error truncating import tables: {str(e)}", exc_info=True)
+            return False
