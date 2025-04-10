@@ -107,32 +107,35 @@ class MySQLConnectorLoad(MySQLConnector):
             self.connection.rollback()
             print(f"Error loading fact_btc: {str(e)}")
 
+    def get_rate_cols(self):
+        column_query = """
+                    SELECT column_name 
+                    FROM information_schema.columns 
+                    WHERE table_schema = DATABASE() 
+                    AND table_name = 'gold_data_import' 
+                    AND column_name LIKE 'rate_%'
+                    """
+        self.cursor.execute(column_query)
+        rate_columns = [row[0] for row in self.cursor.fetchall()]
+
+        currency_codes = [column[5:].upper() for column in rate_columns]
+
+        return currency_codes
+
     def load_fact_exchange_rates(self):
         try:
-            column_query = """
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_schema = DATABASE() 
-            AND table_name = 'gold_data_import' 
-            AND column_name LIKE 'rate_%'
-            """
-            self.cursor.execute(column_query)
-            rate_columns = [row[0] for row in self.cursor.fetchall()]
+            currency_codes = self.get_rate_cols()
 
             total_rows_affected = 0
 
-            for rate_column in rate_columns:
-                currency_code = rate_column[5:].upper()
-
-                currency_query = "SELECT Id FROM currency WHERE code = %s"
-                self.cursor.execute(currency_query, (currency_code,))
-                result = self.cursor.fetchone()
+            for currency_code in currency_codes:
+                result = self.get_currency_by_code(currency_code)
 
                 if not result:
                     print(f"Currency {currency_code} not found in currency table, skipping")
                     continue
 
-                currency_id = result[0]
+                currency_id = result
 
                 insert_query = f"""
                 INSERT INTO fact_exchange_rates (
@@ -147,18 +150,18 @@ class MySQLConnectorLoad(MySQLConnector):
                     imp.date,
                     imp.currency_id AS base_currency_id,
                     %s AS target_currency_id,
-                    imp.{rate_column} AS rate,
+                    imp.rate_{currency_code} AS rate,
                     NOW(4) AS created_at,
                     NOW(4) AS updated_at
                 FROM gold_data_import imp
-                WHERE imp.{rate_column} IS NOT NULL
+                WHERE imp.rate_{currency_code} IS NOT NULL
                 AND imp.currency_id != %s
                 AND NOT EXISTS (
                     SELECT 1 FROM fact_exchange_rates fact
                     WHERE fact.date = imp.date
                       AND fact.base_currency_id = imp.currency_id
                       AND fact.target_currency_id = %s
-                      AND fact.rate = imp.{rate_column}
+                      AND fact.rate = imp.rate_{currency_code}
                 )
                 ON DUPLICATE KEY UPDATE
                     rate = VALUES(rate),
