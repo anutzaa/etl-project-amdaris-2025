@@ -1,8 +1,11 @@
 from etl.extract.mysql_conn import MySQLConnector
+from logger import logger
 
 
 class MySQLConnectorLoad(MySQLConnector):
     def load_fact_btc(self):
+        logger.info("Loading data into fact_btc from staging table")
+
         query = """
              INSERT INTO fact_btc (date, currency_id, open, high, low, close, volume, created_at, updated_at)
                 SELECT 
@@ -33,13 +36,16 @@ class MySQLConnectorLoad(MySQLConnector):
                 """
         try:
             self.cursor.execute(query)
+            rows_affected = self.cursor.rowcount
             self.connection.commit()
-            print("Data loaded into fact_btc from staging table")
+            logger.info(f"Data loaded into fact_btc: {rows_affected} rows affected")
         except Exception as e:
             self.connection.rollback()
-            print(f"Error loading fact_btc: {str(e)}")
+            logger.error(f"Error loading fact_btc: {str(e)}", exc_info=True)
 
     def load_fact_gold(self):
+        logger.info("Loading data into fact_gold from staging table")
+
         query = """
                 INSERT INTO fact_gold (
                     currency_id, 
@@ -101,41 +107,49 @@ class MySQLConnectorLoad(MySQLConnector):
                 """
         try:
             self.cursor.execute(query)
+            rows_affected = self.cursor.rowcount
             self.connection.commit()
-            print("Data loaded into fact_gold from staging table")
+            logger.info(f"Data loaded into fact_gold: {rows_affected} rows affected")
         except Exception as e:
             self.connection.rollback()
-            print(f"Error loading fact_btc: {str(e)}")
+            logger.error(f"Error loading fact_gold: {str(e)}", exc_info=True)
 
     def get_rate_cols(self):
-        column_query = """
-                    SELECT column_name 
-                    FROM information_schema.columns 
-                    WHERE table_schema = DATABASE() 
-                    AND table_name = 'gold_data_import' 
-                    AND column_name LIKE 'rate_%'
-                    """
-        self.cursor.execute(column_query)
-        rate_columns = [row[0] for row in self.cursor.fetchall()]
+        logger.debug("Retrieving rate columns from gold_data_import")
+        try:
+            column_query = """
+                        SELECT column_name 
+                        FROM information_schema.columns 
+                        WHERE table_schema = DATABASE() 
+                        AND table_name = 'gold_data_import' 
+                        AND column_name LIKE 'rate_%'
+                        """
+            self.cursor.execute(column_query)
+            rate_columns = [row[0] for row in self.cursor.fetchall()]
 
-        currency_codes = [column[5:].upper() for column in rate_columns]
+            currency_codes = [column[5:].upper() for column in rate_columns]
+            logger.debug(f"Found rate columns for currencies: {', '.join(currency_codes)}")
 
-        return currency_codes
+            return currency_codes
+        except Exception as e:
+            logger.error(f"Error retrieving rate columns: {str(e)}", exc_info=True)
+            return []
 
     def load_fact_exchange_rates(self):
+        logger.info("Loading data into fact_exchange_rates from staging table")
+
         try:
             currency_codes = self.get_rate_cols()
 
             total_rows_affected = 0
 
             for currency_code in currency_codes:
-                result = self.get_currency_by_code(currency_code)
+                logger.debug(f"Processing exchange rates for currency: {currency_code}")
+                currency_id = self.get_currency_by_code(currency_code)
 
-                if not result:
-                    print(f"Currency {currency_code} not found in currency table, skipping")
+                if not currency_id:
+                    logger.warning(f"Currency {currency_code} not found in currency table, skipping")
                     continue
-
-                currency_id = result
 
                 insert_query = f"""
                 INSERT INTO fact_exchange_rates (
@@ -172,22 +186,40 @@ class MySQLConnectorLoad(MySQLConnector):
                 rows_affected = self.cursor.rowcount
                 total_rows_affected += rows_affected
 
-                print(f"Loaded {rows_affected} {currency_code} exchange rates")
+                logger.info(f"Loaded {rows_affected} {currency_code} exchange rates")
 
             self.connection.commit()
-            print(f"Total data loaded into fact_exchange_rates: {total_rows_affected} rows affected")
+            logger.info(f"Total data loaded into fact_exchange_rates: {total_rows_affected} rows affected")
             return total_rows_affected
 
         except Exception as e:
             self.connection.rollback()
-            print(f"Error loading fact_exchange_rates: {str(e)}")
+            logger.error(f"Error loading fact_exchange_rates: {str(e)}", exc_info=True)
             return 0
 
     def load_dim_date(self):
-        print("Starting load of dim_date dimension table")
+        logger.info("Starting load of dim_date dimension table")
 
         try:
             cursor = self.connection.cursor()
+
+            count_query = """
+            SELECT COUNT(DISTINCT date) 
+            FROM (
+                SELECT date FROM btc_data_import
+                UNION
+                SELECT date FROM gold_data_import
+            ) AS all_dates
+            WHERE date NOT IN (SELECT date FROM dim_date)
+            """
+            cursor.execute(count_query)
+            date_count = cursor.fetchone()[0]
+
+            if date_count == 0:
+                logger.info("No new dates to load into dim_date")
+                return 0
+
+            logger.info(f"Found {date_count} new dates to load into dim_date")
 
             insert_query = """
             INSERT INTO dim_date (
@@ -233,10 +265,10 @@ class MySQLConnectorLoad(MySQLConnector):
 
             self.connection.commit()
 
-            print(f"Successfully loaded {rows_affected} dates into dim_date")
-            return True
+            logger.info(f"Successfully loaded {rows_affected} dates into dim_date")
+            return rows_affected
 
         except Exception as e:
             self.connection.rollback()
-            print(f"Error loading dim_date: {str(e)}")
-            return False
+            logger.error(f"Error loading dim_date: {str(e)}", exc_info=True)
+            return 0

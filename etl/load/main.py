@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 
 from etl.load.mysql_conn import MySQLConnectorLoad
+from logger import logger
 
 if __name__ == "__main__":
     load_dotenv()
