@@ -7,6 +7,19 @@ drop table if exists fact_exchange_rates;
 drop table if exists dim_date;
 
 
+create table dim_date(
+    date date primary key,
+    day int not null,
+    month int not null,
+    month_name varchar(15) not null,
+    quarter int not null,
+    year int not null,
+    day_of_week int not null,
+    week_of_year int not null,
+    is_weekend boolean not null
+);
+
+
 create table fact_btc(
     Id int auto_increment primary key,
     date date not null,
@@ -55,17 +68,4 @@ create table fact_exchange_rates(
     foreign key (target_currency_id) references currency(Id),
     foreign key (date) references dim_date(date),
     unique index idx_currency_date (base_currency_id, target_currency_id, date)
-);
-
-
-create table dim_date(
-    date date primary key,
-    day int not null,
-    month int not null,
-    month_name varchar(15) not null,
-    quarter int not null,
-    year int not null,
-    day_of_week int not null,
-    week_of_year int not null,
-    is_weekend boolean not null
 );
