@@ -183,3 +183,61 @@ class MySQLConnectorLoad(MySQLConnector):
         except Exception as e:
             self.connection.rollback()
             print(f"Error loading fact_btc: {str(e)}")
+
+    def load_dim_date(self):
+        print("Starting load of dim_date dimension table")
+
+        try:
+            cursor = self.connection.cursor()
+
+            insert_query = """
+            INSERT INTO dim_date (
+                date,
+                day,
+                month,
+                month_name,
+                quarter,
+                year,
+                day_of_week,
+                week_of_year,
+                is_weekend
+            )
+            SELECT DISTINCT
+                date,
+                DAYOFMONTH(date) AS day,
+                MONTH(date) AS month,
+                MONTHNAME(date) AS month_name,
+                QUARTER(date) AS quarter,
+                YEAR(date) AS year,
+                DAYOFWEEK(date) AS day_of_week,
+                WEEKOFYEAR(date) AS week_of_year,
+                DAYOFWEEK(date) IN (1, 7) AS is_weekend
+            FROM (
+                SELECT date FROM btc_data_import
+                UNION
+                SELECT date FROM gold_data_import
+            ) AS all_dates
+            WHERE date NOT IN (SELECT date FROM dim_date)
+            ON DUPLICATE KEY UPDATE
+                day = VALUES(day),
+                month = VALUES(month),
+                month_name = VALUES(month_name),
+                quarter = VALUES(quarter),
+                year = VALUES(year),
+                day_of_week = VALUES(day_of_week),
+                week_of_year = VALUES(week_of_year),
+                is_weekend = VALUES(is_weekend)
+            """
+
+            cursor.execute(insert_query)
+            rows_affected = cursor.rowcount
+
+            self.connection.commit()
+
+            print(f"Successfully loaded {rows_affected} dates into dim_date")
+            return True
+
+        except Exception as e:
+            self.connection.rollback()
+            print(f"Error loading dim_date: {str(e)}")
+            return False

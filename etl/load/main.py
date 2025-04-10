@@ -17,6 +17,8 @@ if __name__ == "__main__":
 
     conn.connect()
 
+    conn.load_dim_date()
+
     conn.load_fact_btc()
     conn.load_fact_gold()
     conn.load_fact_exchange_rates()
