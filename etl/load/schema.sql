@@ -16,6 +16,8 @@ create table fact_btc(
     low decimal(16,2) not null,
     close decimal(16,2) not null,
     volume decimal (20,8) not null,
+    created_at timestamp(4) not null,
+    updated_at timestamp(4) not null,
     foreign key (currency_id) references currency(Id) on delete set null,
     unique index idx_currency_date (currency_id, date)
 );
@@ -32,6 +34,8 @@ create table fact_gold(
     price_24k decimal(16,8),
     price_18k decimal(16,8),
     price_14k decimal(16,8),
+    created_at timestamp(4) not null,
+    updated_at timestamp(4) not null,
     foreign key (currency_id) references currency(Id) on delete set null,
     unique index idx_currency_date (currency_id, date)
 );
@@ -43,8 +47,11 @@ create table fact_exchange_rates(
     base_currency_id int not null,
     target_currency_id int not null,
     rate decimal(6,5) not null,
+    created_at timestamp(4) not null,
+    updated_at timestamp(4) not null,
     foreign key (base_currency_id) references currency(Id),
-    foreign key (target_currency_id) references currency(Id)
+    foreign key (target_currency_id) references currency(Id),
+    unique index idx_currency_date (base_currency_id, target_currency_id, date)
 );
 
 
