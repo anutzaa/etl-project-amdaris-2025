@@ -2,11 +2,17 @@ import os
 
 from dotenv import load_dotenv
 
+from etl.load.btc_load import BitcoinLoad
+from etl.load.gold_load import GoldLoad
 from etl.load.mysql_conn import MySQLConnectorLoad
-from logger import logger
+from etl.load.logger import logger
 
-if __name__ == "__main__":
+
+def load():
+    logger.info("Starting Load process")
+
     load_dotenv()
+    logger.debug("Environment variables loaded")
 
     DB_HOST = os.getenv("DB_HOST")
     DB_PORT = os.getenv("DB_PORT")
@@ -18,10 +24,11 @@ if __name__ == "__main__":
 
     conn.connect()
 
-    conn.load_dim_date()
+    btc = BitcoinLoad(conn)
+    btc.call()
 
-    conn.load_fact_btc()
-    conn.load_fact_gold()
-    conn.load_fact_exchange_rates()
+    gold = GoldLoad(conn)
+    gold.call()
 
     conn.disconnect()
+    logger.info("Load process completed successfully")

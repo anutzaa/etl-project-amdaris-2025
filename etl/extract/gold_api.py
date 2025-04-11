@@ -2,9 +2,9 @@ import requests
 import os
 from datetime import datetime
 
-from utils import save_to_file, process_api_response
-from mysql_conn import MySQLConnector
-from logger import logger
+from etl.extract.utils import save_to_file, process_api_response
+from etl.extract.mysql_conn import MySQLConnector
+from etl.extract.logger import logger
 
 
 class GoldAPI:

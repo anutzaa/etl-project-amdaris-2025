@@ -1,5 +1,5 @@
 from etl.extract.mysql_conn import MySQLConnector
-from logger import logger
+from etl.load.logger import logger
 
 
 class MySQLConnectorLoad(MySQLConnector):

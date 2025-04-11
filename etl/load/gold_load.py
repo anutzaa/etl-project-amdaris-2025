@@ -1,5 +1,5 @@
 from etl.load.mysql_conn import MySQLConnectorLoad
-from logger import logger
+from etl.load.logger import logger
 
 
 class GoldLoad:

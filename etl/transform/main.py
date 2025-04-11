@@ -2,12 +2,13 @@ import os
 
 from dotenv import load_dotenv
 
-from btc_transform import BitcoinTransform
-from gold_transform import GoldTransform
-from mysql_conn import MySQLConnectorTransform
-from logger import logger
+from etl.transform.btc_transform import BitcoinTransform
+from etl.transform.gold_transform import GoldTransform
+from etl.transform.mysql_conn import MySQLConnectorTransform
+from etl.transform.logger import logger
 
-if __name__ == "__main__":
+
+def transform():
     logger.info("Starting Transform process")
 
     load_dotenv()

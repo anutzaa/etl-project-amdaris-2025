@@ -1,14 +1,14 @@
 import os
 from datetime import datetime
 
-from mysql_conn import MySQLConnectorTransform
-from utils import move_file, process_file, load_json_file
-from logger import logger
+from etl.transform.mysql_conn import MySQLConnectorTransform
+from etl.transform.utils import move_file, process_file, load_json_file
+from etl.transform.logger import logger
 
 
 class GoldTransform:
     def __init__(self, conn: MySQLConnectorTransform):
-        self.directory = "../../data/raw/gold/"
+        self.directory = "../data/raw/gold/"
         self.conn = conn
 
     def transform(self, file_path):

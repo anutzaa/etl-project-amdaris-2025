@@ -1,13 +1,13 @@
 import os
-import logging
 from dotenv import load_dotenv
 
-from btc_api import BitcoinAPI
-from gold_api import GoldAPI
-from mysql_conn import MySQLConnector
-from logger import logger
+from etl.extract.btc_api import BitcoinAPI
+from etl.extract.gold_api import GoldAPI
+from etl.extract.mysql_conn import MySQLConnector
+from etl.extract.logger import logger
 
-if __name__ == "__main__":
+
+def extract():
     logger.info("Starting Extract process")
 
     load_dotenv()
@@ -34,13 +34,13 @@ if __name__ == "__main__":
     conn.connect()
 
     logger.info("Starting Bitcoin API data extraction")
-    btc_client = BitcoinAPI(BTC_API_KEY, conn)
-    btc_client.call()
+    btc = BitcoinAPI(BTC_API_KEY, conn)
+    btc.call()
     logger.info("Bitcoin API data extraction complete")
 
     logger.info("Starting Gold API data extraction")
-    gold_client = GoldAPI(GOLD_API_KEY, conn)
-    gold_client.call()
+    gold = GoldAPI(GOLD_API_KEY, conn)
+    gold.call()
     logger.info("Gold API data extraction complete")
 
     conn.disconnect()

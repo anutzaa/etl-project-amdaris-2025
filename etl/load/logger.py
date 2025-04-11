@@ -6,7 +6,7 @@ from datetime import datetime
 def setup_logger():
     """Configure and return a logger for the app"""
 
-    log_dir = "../load/logs"
+    log_dir = "../etl/load/logs"
     os.makedirs(log_dir, exist_ok=True)
 
     logger = logging.getLogger("load")

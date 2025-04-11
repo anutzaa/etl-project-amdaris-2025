@@ -1,8 +1,8 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 
-from logger import logger
+from etl.extract.logger import logger
 
 
 def process_api_response(response):
@@ -33,7 +33,7 @@ def save_to_file(data, api_type):
 
     logger.debug(f"Saving {api_type} data to file")
 
-    base_dir = '../../data/raw/'
+    base_dir = '../data/raw/'
     output_dir = os.path.join(
         base_dir, 'bitcoin' if api_type == 'btc' else 'gold'
     )

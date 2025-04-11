@@ -1,7 +1,8 @@
 import json
 import os
 import shutil
-from logger import logger
+
+from etl.transform.logger import logger
 
 
 def move_file(status, data_type, file_path):
@@ -10,7 +11,7 @@ def move_file(status, data_type, file_path):
     """
     logger.info(f"Moving file {file_path} to {status} directory for {data_type}")
     try:
-        base_dir = os.path.normpath("../../data")
+        base_dir = os.path.normpath("../data")
         logger.debug(f"Base directory: {base_dir}")
 
         target_dir = os.path.join(base_dir, status, data_type)
