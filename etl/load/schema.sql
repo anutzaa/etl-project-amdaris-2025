@@ -1,71 +1,74 @@
-use etlproject;
+# Data warehouse schema
+USE warehouse;
 
 
-drop table if exists fact_btc;
-drop table if exists fact_gold;
-drop table if exists fact_exchange_rates;
-drop table if exists dim_date;
+DROP TABLE IF EXISTS fact_btc;
+DROP TABLE IF EXISTS fact_gold;
+DROP TABLE IF EXISTS fact_exchange_rates;
+DROP TABLE IF EXISTS dim_date;
 
 
-create table dim_date(
-    date date primary key,
-    day int not null,
-    month int not null,
-    month_name varchar(15) not null,
-    quarter int not null,
-    year int not null,
-    day_of_week int not null,
-    week_of_year int not null,
-    is_weekend boolean not null
+CREATE TABLE dim_date(
+    date DATE PRIMARY KEY,
+    day INT NOT NULL,
+    month INT NOT NULL,
+    month_name VARCHAR(15) NOT NULL,
+    quarter INT NOT NULL,
+    year INT NOT NULL,
+    day_of_week INT NOT NULL,
+    week_of_year INT NOT NULL,
+    created_at TIMESTAMP(4) NOT NULL,
+    updated_at TIMESTAMP(4) NOT NULL,
+    is_weekend BOOLEAN NOT NULL
 );
 
 
-create table fact_btc(
-    Id int auto_increment primary key,
-    date date not null,
-    currency_id int,
-    open decimal(16,2) not null,
-    high decimal(16,2) not null,
-    low decimal(16,2) not null,
-    close decimal(16,2) not null,
-    volume decimal (20,8) not null,
-    created_at timestamp(4) not null,
-    updated_at timestamp(4) not null,
-    foreign key (currency_id) references dim_currency(Id) on delete set null,
-    foreign key (date) references dim_date(date),
-    unique index idx_currency_date (currency_id, date)
+CREATE TABLE fact_btc(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE NOT NULL,
+    currency_id INT,
+    open DECIMAL(16,2) NOT NULL,
+    high DECIMAL(16,2) NOT NULL,
+    low DECIMAL(16,2) NOT NULL,
+    close DECIMAL(16,2) NOT NULL,
+    volume DECIMAL (20,8) NOT NULL,
+    created_at TIMESTAMP(4) NOT NULL,
+    updated_at TIMESTAMP(4) NOT NULL,
+    FOREIGN KEY (currency_id) REFERENCES dim_currency(Id) ON DELETE SET NULL,
+    FOREIGN KEY (date) REFERENCES dim_date(date),
+    UNIQUE INDEX idx_currency_date (currency_id, date)
 );
 
 
-create table fact_gold(
-    Id int auto_increment primary key,
-    currency_id int,
-    date date not null,
-    open decimal(16,2) not null,
-    high decimal(16,2) not null,
-    low decimal(16,2) not null,
-    price decimal(16,2) not null,
-    price_24k decimal(16,8),
-    price_18k decimal(16,8),
-    price_14k decimal(16,8),
-    created_at timestamp(4) not null,
-    updated_at timestamp(4) not null,
-    foreign key (currency_id) references dim_currency(Id) on delete set null,
-    foreign key (date) references dim_date(date),
-    unique index idx_currency_date (currency_id, date)
+CREATE TABLE fact_gold(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    currency_id INT,
+    date DATE NOT NULL,
+    open DECIMAL(16,2) NOT NULL,
+    high DECIMAL(16,2) NOT NULL,
+    low DECIMAL(16,2) NOT NULL,
+    price DECIMAL(16,2) NOT NULL,
+    price_24k DECIMAL(16,8),
+    price_18k DECIMAL(16,8),
+    price_14k DECIMAL(16,8),
+    created_at TIMESTAMP(4) NOT NULL,
+    updated_at TIMESTAMP(4) NOT NULL,
+    FOREIGN KEY (currency_id) REFERENCES dim_currency(Id) ON DELETE SET NULL,
+    FOREIGN KEY (date) REFERENCES dim_date(date),
+    UNIQUE INDEX idx_currency_date (currency_id, date)
 );
 
 
-create table fact_exchange_rates(
-    Id int auto_increment primary key,
-    date date not null,
-    base_currency_id int not null,
-    target_currency_id int not null,
-    rate decimal(6,5) not null,
-    created_at timestamp(4) not null,
-    updated_at timestamp(4) not null,
-    foreign key (base_currency_id) references dim_currency(Id),
-    foreign key (target_currency_id) references dim_currency(Id),
-    foreign key (date) references dim_date(date),
-    unique index idx_currency_date (base_currency_id, target_currency_id, date)
+CREATE TABLE fact_exchange_rates(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    DATE DATE NOT NULL,
+    base_currency_id INT NOT NULL,
+    target_currency_id INT NOT NULL,
+    rate DECIMAL(6,5) NOT NULL,
+    created_at TIMESTAMP(4) NOT NULL,
+    updated_at TIMESTAMP(4) NOT NULL,
+    FOREIGN KEY (base_currency_id) REFERENCES dim_currency(Id),
+    FOREIGN KEY (target_currency_id) REFERENCES dim_currency(Id),
+    FOREIGN KEY (date) REFERENCES dim_date(date),
+    UNIQUE INDEX idx_currency_date (base_currency_id, target_currency_id, date)
 );

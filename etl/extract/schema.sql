@@ -1,57 +1,66 @@
-create database etlproject;
+# Database creation
+CREATE DATABASE etlproject;
 
+# Data warehouse schema
+CREATE SCHEMA warehouse;
+USE warehouse;
 
-drop table if exists api;
-drop table if exists api_import_log;
-drop table if exists currency;
-drop table if exists import_log;
+DROP TABLE IF EXISTS dim_currency;
 
-
-create table currency (
-    Id int auto_increment primary key,
-    code varchar(3) unique not null,
-    name varchar(50) unique not null
+CREATE TABLE dim_currency (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(3) UNIQUE NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL
 );
 
-
-insert into currency(code, name)
-values('EUR', 'Euro'),
+INSERT INTO dim_currency(code, name)
+VALUES('EUR', 'Euro'),
       ('USD', 'United States Dollar'),
       ('GBP', 'British Pound Sterling');
 
 
-create table api(
-    Id varchar(3) primary key,
-    name varchar(10) unique not null
+# Extract schema
+CREATE SCHEMA extract;
+USE extract;
+
+
+DROP TABLE IF EXISTS api;
+DROP TABLE IF EXISTS api_import_log;
+DROP TABLE IF EXISTS import_log;
+
+
+CREATE TABLE api(
+    Id VARCHAR(3) PRIMARY KEY,
+    name VARCHAR(10) UNIQUE NOT NULL
 );
 
 
-insert into api
-values ('BTC','BitcoinAPI'),
+INSERT INTO api
+VALUES ('BTC','BitcoinAPI'),
        ('XAU', 'GoldAPI');
 
 
-create table import_log(
-    Id int auto_increment primary key,
-    batch_date date not null,
-    currency_id int,
-    import_directory_name varchar(50) not null,
-    import_file_name varchar(50) not null,
-    file_created_date timestamp(4) not null,
-    file_last_modified_date timestamp(4),
-    row_count int,
-    foreign key (currency_id) references currency(Id) on delete set null
+CREATE TABLE import_log(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    batch_DATE DATE NOT NULL,
+    currency_id INT,
+    import_directory_name VARCHAR(50) NOT NULL,
+    import_file_name VARCHAR(50) NOT NULL,
+    file_created_DATE TIMESTAMP(4) NOT NULL,
+    file_last_modified_DATE TIMESTAMP(4),
+    row_count INT,
+    FOREIGN KEY (currency_id) REFERENCES warehouse.dim_currency(Id) ON DELETE SET NULL
 );
 
 
-create table api_import_log(
-    Id int auto_increment primary key,
-    currency_id int,
-    api_id varchar(3),
-    start_time timestamp(4) not null,
-    end_time timestamp(4),
-    code_response smallint,
-    error_messages varchar(255),
-    foreign key (api_id) references api(Id) on delete set null,
-    foreign key (currency_id) references currency(Id) on delete set null
+CREATE TABLE api_import_log(
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    currency_id INT,
+    api_id VARCHAR(3),
+    start_time TIMESTAMP(4) NOT NULL,
+    end_time TIMESTAMP(4),
+    code_response SMALLINT,
+    error_messages VARCHAR(255),
+    FOREIGN KEY (api_id) REFERENCES api(Id) ON DELETE SET NULL,
+    FOREIGN KEY (currency_id) REFERENCES warehouse.dim_currency(Id) ON DELETE SET NULL
 );
