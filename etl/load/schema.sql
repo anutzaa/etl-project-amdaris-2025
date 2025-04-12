@@ -17,9 +17,9 @@ CREATE TABLE dim_date(
     year INT NOT NULL,
     day_of_week INT NOT NULL,
     week_of_year INT NOT NULL,
-    created_at TIMESTAMP(4) NOT NULL,
-    updated_at TIMESTAMP(4) NOT NULL,
-    is_weekend BOOLEAN NOT NULL
+    is_weekend BOOLEAN NOT NULL,
+    created_at TIMESTAMP(4),
+    updated_at TIMESTAMP(4)
 );
 
 
@@ -61,7 +61,7 @@ CREATE TABLE fact_gold(
 
 CREATE TABLE fact_exchange_rates(
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    DATE DATE NOT NULL,
+    date DATE NOT NULL,
     base_currency_id INT NOT NULL,
     target_currency_id INT NOT NULL,
     rate DECIMAL(6,5) NOT NULL,

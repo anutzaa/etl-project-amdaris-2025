@@ -42,7 +42,7 @@ class MySQLConnector:
 
     def get_currencies(self):
         logger.debug("Fetching currencies from database")
-        query = "SELECT Id, code FROM dim_currency"
+        query = "SELECT Id, code FROM warehouse.dim_currency"
         self.cursor.execute(query)
         currencies = self.cursor.fetchall()
         logger.debug(f"Found {len(currencies)} currencies")
@@ -50,7 +50,7 @@ class MySQLConnector:
 
     def get_currency_by_code(self, code):
         logger.debug(f"Looking up currency ID for code: {code}")
-        query = "SELECT Id FROM dim_currency WHERE code = %s"
+        query = "SELECT Id FROM warehouse.dim_currency WHERE code = %s"
         self.cursor.execute(query, (code,))
         result = self.cursor.fetchone()
 
@@ -73,7 +73,7 @@ class MySQLConnector:
             f"Logging import for currency_id: {currency_id}, file: {import_file_name}, rows: {row_count}"
         )
         query = """
-        INSERT INTO import_log (batch_date, currency_id, import_directory_name, import_file_name, 
+        INSERT INTO extract.import_log (batch_date, currency_id, import_directory_name, import_file_name, 
         file_created_date, file_last_modified_date, row_count)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
@@ -103,7 +103,7 @@ class MySQLConnector:
             f"Logging API import for currency_id: {currency_id}, api_id: {api_id}"
         )
         query = """
-        INSERT INTO api_import_log (currency_id, api_id, start_time, end_time, code_response, error_messages)
+        INSERT INTO extract.api_import_log (currency_id, api_id, start_time, end_time, code_response, error_messages)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
         values = (

@@ -7,7 +7,7 @@ class BitcoinLoad:
         self.conn = conn
 
     def load_dim_date(self):
-        self.conn.upsert_dim_date('btc_data_import')
+        self.conn.upsert_dim_date('transform.btc_data_import')
 
     def load_fact_bitcoin(self):
         logger.info("Loading data into fact_btc from staging table")

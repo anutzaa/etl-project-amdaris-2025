@@ -7,7 +7,7 @@ class GoldLoad:
         self.conn = conn
 
     def load_dim_date(self):
-        self.conn.upsert_dim_date('gold_data_import')
+        self.conn.upsert_dim_date('transform.gold_data_import')
 
     def load_fact_gold(self):
         logger.info("Loading data into fact_gold from staging table")

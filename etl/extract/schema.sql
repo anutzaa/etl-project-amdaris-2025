@@ -42,12 +42,12 @@ VALUES ('BTC','BitcoinAPI'),
 
 CREATE TABLE import_log(
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    batch_DATE DATE NOT NULL,
+    batch_date DATE NOT NULL,
     currency_id INT,
     import_directory_name VARCHAR(50) NOT NULL,
     import_file_name VARCHAR(50) NOT NULL,
-    file_created_DATE TIMESTAMP(4) NOT NULL,
-    file_last_modified_DATE TIMESTAMP(4),
+    file_created_date TIMESTAMP(4) NOT NULL,
+    file_last_modified_date TIMESTAMP(4),
     row_count INT,
     FOREIGN KEY (currency_id) REFERENCES warehouse.dim_currency(Id) ON DELETE SET NULL
 );

@@ -9,7 +9,7 @@ class MySQLConnectorTransform(MySQLConnector):
         try:
             logger.debug(f"Upserting BTC data for currency_id {currency_id}, date {date}")
             query = """
-            INSERT INTO btc_data_import (currency_id, date, open, high, low, close, volume)
+            INSERT INTO transform.btc_data_import (currency_id, date, open, high, low, close, volume)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE 
                 open = VALUES(open),
@@ -52,7 +52,7 @@ class MySQLConnectorTransform(MySQLConnector):
         try:
             logger.debug(f"Upserting gold data for currency_id {currency_id}, date {date}")
             query = """
-            INSERT INTO gold_data_import (
+            INSERT INTO transform.gold_data_import (
                 currency_id, date, open, high, low, price, 
                 price_24k, price_18k, price_14k, 
                 rate_USD, rate_EUR, rate_GBP
@@ -104,7 +104,7 @@ class MySQLConnectorTransform(MySQLConnector):
                 f"Logging transform: currency_id={currency_id}, file={processed_file_name}, rows={row_count}, status={status}"
             )
             query = """
-                  INSERT INTO transform_log (batch_date, currency_id, processed_directory_name ,processed_file_name, row_count, status)
+                  INSERT INTO transform.transform_log (batch_date, currency_id, processed_directory_name ,processed_file_name, row_count, status)
                   VALUES (%s, %s, %s, %s, %s, %s)
                   """
             values = (datetime.today(), currency_id, processed_directory_name, processed_file_name, row_count, status)
@@ -117,7 +117,7 @@ class MySQLConnectorTransform(MySQLConnector):
             return False
 
     def truncate_import_tables(self):
-        tables = ['btc_data_import', 'gold_data_import']
+        tables = ['transform.btc_data_import', 'transform.gold_data_import']
         logger.info(f"Truncating import tables")
 
         try:

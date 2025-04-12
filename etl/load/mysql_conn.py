@@ -7,7 +7,7 @@ class MySQLConnectorLoad(MySQLConnector):
         logger.info("Starting upsert for fact_btc")
         try:
             query = """
-                INSERT INTO fact_btc (
+                INSERT INTO warehouse.fact_btc (
                     date, currency_id, open, high, low, close, volume, created_at, updated_at
                 )
                 SELECT 
@@ -20,9 +20,9 @@ class MySQLConnectorLoad(MySQLConnector):
                     imp.volume,
                     NOW(4), 
                     NOW(4)
-                FROM btc_data_import imp
+                FROM transform.btc_data_import imp
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM fact_btc fact
+                    SELECT 1 FROM warehouse.fact_btc fact
                     WHERE fact.currency_id = imp.currency_id
                       AND fact.date = imp.date
                       AND MD5(CONCAT_WS(',', fact.open, fact.high, fact.low, fact.close, fact.volume)) =
@@ -51,7 +51,7 @@ class MySQLConnectorLoad(MySQLConnector):
         logger.info("Starting upsert for fact_gold")
         try:
             insert_query = """
-                INSERT INTO fact_gold (
+                INSERT INTO warehouse.fact_gold (
                     currency_id, 
                     date, 
                     open, 
@@ -76,9 +76,9 @@ class MySQLConnectorLoad(MySQLConnector):
                     imp.price_14k,
                     NOW(4),
                     NOW(4)
-                FROM gold_data_import imp
+                FROM transform.gold_data_import imp
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM fact_gold fact
+                    SELECT 1 FROM warehouse.fact_gold fact
                     WHERE fact.currency_id = imp.currency_id
                       AND fact.date = imp.date
                       AND MD5(CONCAT_WS(',', 
@@ -140,7 +140,7 @@ class MySQLConnectorLoad(MySQLConnector):
                 return False
 
             insert_query = f"""
-                 INSERT INTO fact_exchange_rates (
+                 INSERT INTO warehouse.fact_exchange_rates (
                      date,
                      base_currency_id,
                      target_currency_id,
@@ -155,11 +155,11 @@ class MySQLConnectorLoad(MySQLConnector):
                      imp.rate_{currency_code} AS rate,
                      NOW(4),
                      NOW(4)
-                 FROM gold_data_import imp
+                 FROM transform.gold_data_import imp
                  WHERE imp.rate_{currency_code} IS NOT NULL
                    AND imp.currency_id != %s
                    AND NOT EXISTS (
-                       SELECT 1 FROM fact_exchange_rates fact
+                       SELECT 1 FROM warehouse.fact_exchange_rates fact
                        WHERE fact.date = imp.date
                          AND fact.base_currency_id = imp.currency_id
                          AND fact.target_currency_id = %s
@@ -186,7 +186,7 @@ class MySQLConnectorLoad(MySQLConnector):
             count_query = f"""
                 SELECT COUNT(DISTINCT date)
                 FROM {source_table}
-                WHERE date NOT IN (SELECT date FROM dim_date)
+                WHERE date NOT IN (SELECT date FROM warehouse.dim_date)
             """
             self.cursor.execute(count_query)
             date_count = self.cursor.fetchone()[0]
@@ -198,9 +198,9 @@ class MySQLConnectorLoad(MySQLConnector):
             logger.info(f"Found {date_count} new dates to load into dim_date")
 
             insert_query = f"""
-                INSERT INTO dim_date (
+                INSERT INTO warehouse.dim_date (
                     date, day, month, month_name, quarter, year,
-                    day_of_week, week_of_year, is_weekend
+                    day_of_week, week_of_year, is_weekend, created_at, updated_at
                 )
                 SELECT DISTINCT
                     date,
@@ -211,9 +211,11 @@ class MySQLConnectorLoad(MySQLConnector):
                     YEAR(date),
                     DAYOFWEEK(date),
                     WEEKOFYEAR(date),
-                    DAYOFWEEK(date) IN (1, 7)
+                    DAYOFWEEK(date) IN (1, 7),
+                    NOW(4),
+                    NOW(4)
                 FROM {source_table}
-                WHERE date NOT IN (SELECT date FROM dim_date)
+                WHERE date NOT IN (SELECT date FROM warehouse.dim_date)
                 ON DUPLICATE KEY UPDATE
                     day = VALUES(day),
                     month = VALUES(month),
@@ -222,16 +224,17 @@ class MySQLConnectorLoad(MySQLConnector):
                     year = VALUES(year),
                     day_of_week = VALUES(day_of_week),
                     week_of_year = VALUES(week_of_year),
-                    is_weekend = VALUES(is_weekend)
+                    is_weekend = VALUES(is_weekend),
+                    updated_at = NOW(4)
             """
 
             self.cursor.execute(insert_query)
             rows = self.cursor.rowcount
             self.connection.commit()
             logger.info(f"Upserted {rows} rows into dim_date")
-            return rows
+            return True
 
         except Exception as e:
             self.connection.rollback()
             logger.error(f"Error upserting dim_date from {source_table}: {str(e)}", exc_info=True)
-            return 0
+            return False
