@@ -1,6 +1,3 @@
-# Database creation
-CREATE DATABASE etlproject;
-
 # Data warehouse schema
 CREATE SCHEMA warehouse;
 USE warehouse;

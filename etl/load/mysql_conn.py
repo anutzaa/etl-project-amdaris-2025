@@ -116,7 +116,7 @@ class MySQLConnectorLoad(MySQLConnector):
             column_query = """
                         SELECT column_name 
                         FROM information_schema.columns 
-                        WHERE table_schema = DATABASE() 
+                        WHERE table_schema = 'transform' 
                         AND table_name = 'gold_data_import' 
                         AND column_name LIKE 'rate_%'
                         """
