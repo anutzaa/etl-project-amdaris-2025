@@ -179,3 +179,4 @@ data/
 # Logs folders
 /etl/extract/logs/
 /etl/transform/logs/
+/etl/load/logs/

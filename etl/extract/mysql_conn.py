@@ -42,7 +42,7 @@ class MySQLConnector:
 
     def get_currencies(self):
         logger.debug("Fetching currencies from database")
-        query = "SELECT Id, code FROM currency"
+        query = "SELECT Id, code FROM dim_currency"
         self.cursor.execute(query)
         currencies = self.cursor.fetchall()
         logger.debug(f"Found {len(currencies)} currencies")
@@ -50,7 +50,7 @@ class MySQLConnector:
 
     def get_currency_by_code(self, code):
         logger.debug(f"Looking up currency ID for code: {code}")
-        query = "SELECT Id FROM currency WHERE code = %s"
+        query = "SELECT Id FROM dim_currency WHERE code = %s"
         self.cursor.execute(query, (code,))
         result = self.cursor.fetchone()
 
