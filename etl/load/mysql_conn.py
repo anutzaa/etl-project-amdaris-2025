@@ -1,4 +1,4 @@
-from etl.extract.mysql_conn import MySQLConnector
+from etl.commons.mysql_conn import MySQLConnector
 from etl.load.logger import logger
 
 

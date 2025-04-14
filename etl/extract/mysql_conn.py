@@ -1,65 +1,10 @@
-import mysql.connector
 from datetime import datetime
 
+from etl.commons.mysql_conn import MySQLConnector
 from etl.extract.logger import logger
 
 
-class MySQLConnector:
-    def __init__(self, host, port, database, user, password):
-        self.host = host
-        self.port = port
-        self.database = database
-        self.user = user
-        self.password = password
-        self.connection = None
-        self.cursor = None
-        logger.debug(f"MySQL connector initialized for database: {database}")
-
-    def connect(self):
-        try:
-            if self.database:
-                self.connection = mysql.connector.connect(
-                    host=self.host,
-                    port=self.port,
-                    user=self.user,
-                    password=self.password,
-                    database=self.database,
-                )
-            else:
-                self.connection = mysql.connector.connect(
-                    host=self.host, user=self.user, password=self.password
-                )
-            self.cursor = self.connection.cursor()
-            logger.info(f"Connected to MySQL database: {self.database}")
-        except mysql.connector.Error as error:
-            logger.info(f"Error connecting to MySQL: {error}")
-            self.connection = None
-
-    def disconnect(self):
-        if self.connection:
-            self.connection.close()
-            logger.info("Disconnected from MySQL database")
-
-    def get_currencies(self):
-        logger.debug("Fetching currencies from database")
-        query = "SELECT Id, code FROM warehouse.dim_currency"
-        self.cursor.execute(query)
-        currencies = self.cursor.fetchall()
-        logger.debug(f"Found {len(currencies)} currencies")
-        return currencies
-
-    def get_currency_by_code(self, code):
-        logger.debug(f"Looking up currency ID for code: {code}")
-        query = "SELECT Id FROM warehouse.dim_currency WHERE code = %s"
-        self.cursor.execute(query, (code,))
-        result = self.cursor.fetchone()
-
-        if result:
-            logger.debug(f"Found currency ID {result[0]} for code {code}")
-            return int(result[0])
-        logger.warning(f"No currency found for code: {code}")
-        return None
-
+class MySQLConnectorExtract(MySQLConnector):
     def log_import(
         self,
         currency_id,
