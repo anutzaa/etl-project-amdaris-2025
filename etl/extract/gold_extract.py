@@ -8,8 +8,8 @@ from etl.extract.logger import logger
 
 
 class GoldExtract:
-    def __init__(self, api_key, conn: DBConnectorExtract):
-        self.api_key = api_key
+    def __init__(self, conn: DBConnectorExtract):
+        self.api_key = os.environ.get('GOLD_API_KEY')
         self.base_url = 'https://gold.g.apised.com/v1/latest'
         self.conn = conn
         logger.debug("GoldAPI client initialized")

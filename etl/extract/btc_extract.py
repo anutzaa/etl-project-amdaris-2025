@@ -8,8 +8,8 @@ from etl.extract.logger import logger
 
 
 class BitcoinExtract:
-    def __init__(self, api_key, conn: DBConnectorExtract):
-        self.api_key = api_key
+    def __init__(self, conn: DBConnectorExtract):
+        self.api_key = os.environ.get('BTC_API_KEY')
         self.base_url = 'https://www.alphavantage.co/query'
         self.conn = conn
         logger.debug("BitcoinAPI client initialized")

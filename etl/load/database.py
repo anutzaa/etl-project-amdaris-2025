@@ -40,12 +40,12 @@ class DBConnectorLoad(DBConnector):
             self.cursor.execute(query)
             rows = self.cursor.rowcount
             logger.info(f"Upserted {rows} rows into fact_btc")
-            return True
+            return rows
 
         except Exception as e:
             self.connection.rollback()
             logger.error(f"Error upserting fact_btc: {str(e)}", exc_info=True)
-            return False
+            return 0
 
     def upsert_fact_gold(self):
         logger.info("Starting upsert for fact_gold")
@@ -103,12 +103,12 @@ class DBConnectorLoad(DBConnector):
             self.cursor.execute(insert_query)
             rows = self.cursor.rowcount
             logger.info(f"Upserted {rows} rows into fact_gold")
-            return True
+            return rows
 
         except Exception as e:
             self.connection.rollback()
             logger.error(f"Error upserting fact_gold: {str(e)}", exc_info=True)
-            return False
+            return 0
 
     def upsert_exchange_rates(self, currency_code):
         logger.info(f"Starting upsert for exchange rates: {currency_code}")
@@ -116,7 +116,7 @@ class DBConnectorLoad(DBConnector):
             currency_id = self.get_currency_by_code(currency_code)
             if not currency_id:
                 logger.warning(f"No currency_id found for {currency_code}, skipping")
-                return False
+                return 0
 
             insert_query = f"""
                  INSERT INTO warehouse.fact_exchange_rates (
@@ -152,12 +152,12 @@ class DBConnectorLoad(DBConnector):
             self.cursor.execute(insert_query, (currency_id, currency_id, currency_id))
             rows = self.cursor.rowcount
             logger.info(f"Upserted {rows} rows for {currency_code}")
-            return True
+            return rows
 
         except Exception as e:
             self.connection.rollback()
             logger.error(f"Error upserting exchange rates for {currency_code}: {str(e)}", exc_info=True)
-            return False
+            return 0
 
     def upsert_dim_date(self, source_table):
         logger.info(f"Starting upsert of dim_date from {source_table}")
@@ -211,9 +211,9 @@ class DBConnectorLoad(DBConnector):
             rows = self.cursor.rowcount
             self.connection.commit()
             logger.info(f"Upserted {rows} rows into dim_date")
-            return True
+            return rows
 
         except Exception as e:
             self.connection.rollback()
             logger.error(f"Error upserting dim_date from {source_table}: {str(e)}", exc_info=True)
-            return False
+            return 0
