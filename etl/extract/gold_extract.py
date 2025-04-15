@@ -17,7 +17,7 @@ class GoldExtract:
         get_gold_data()    -- Fetch and store gold price data for a specific base currency
 
     Instance Variables:
-        api_key   -- API key for Gold API
+        api_key  -- API key for Gold API
         base_url -- Endpoint URL for API requests
         conn     -- DBConnectorExtract instance for DB operations
     """

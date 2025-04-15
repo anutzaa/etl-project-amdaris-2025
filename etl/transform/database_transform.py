@@ -249,9 +249,6 @@ class DBConnectorTransform(DBConnector):
         Ensures that columns for currency exchange rates (like 'rate_usd', 'rate_eur')
         exist in the 'gold_data_import' table and adds them if necessary.
 
-        This method checks for the existence of rate columns in the 'gold_data_import' table
-        and adds missing columns dynamically based on the provided rate data.
-
         Parameters:
             rate_data -- A dictionary containing rate data for different currencies.
 

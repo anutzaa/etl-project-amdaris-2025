@@ -7,7 +7,7 @@ class BitcoinLoad:
     Loads Bitcoin data from the staging table into the data warehouse.
 
     Methods:
-        __init__()          -- Initializes with a DB connection
+        __init__()              -- Initializes with a DB connection
         load_dim_date()         -- Populates the dim_date table from BTC data
         load_fact_bitcoin()     -- Loads data into fact_btc from staging table
         call()                  -- Executes the full load process

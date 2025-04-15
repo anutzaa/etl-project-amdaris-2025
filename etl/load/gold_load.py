@@ -7,11 +7,11 @@ class GoldLoad:
     Loads transformed gold data and exchange rates into the data warehouse.
 
     Methods:
-        __init__(                  -- Initializes with a DB connection
-        load_dim_date()                -- Populates the dim_date table
-        load_fact_gold()               -- Loads data into the fact_gold table
-        load_fact_exchange_rates()     -- Loads data into the fact_exchange_rates table
-        call()                         -- Executes the full data load process
+        __init__()                 -- Initializes with a DB connection
+        load_dim_date()            -- Populates the dim_date table
+        load_fact_gold()           -- Loads data into the fact_gold table
+        load_fact_exchange_rates() -- Loads data into the fact_exchange_rates table
+        call()                     -- Executes the full data load process
 
     Instance Variables:
         conn -- DBConnectorLoad instance used for database operations
