@@ -16,10 +16,16 @@ class GoldExtract:
 
     def get_gold_data(self, symbol):
         logger.info(f"Fetching Gold data for currency: {symbol}")
+
+        currencies = self.conn.get_currencies()
+        currency_codes = [currency[1] for currency in currencies]
+        currencies_param = ",".join(currency_codes)
+
         params = {
             'metals': 'XAU',
             'base_currency': symbol,
             'weight_unit': 'gram',
+            'currencies': currencies_param,
         }
 
         headers = {'x-api-key': self.api_key}
