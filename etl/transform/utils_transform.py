@@ -7,7 +7,15 @@ from etl.transform.logger_transform import logger
 
 def move_file(status, data_type, file_path):
     """
-    Move a file to either the processed or error directory using shutil.
+    Move a file to the corresponding status directory.
+
+    Parameters:
+        status    -- 'processed' or 'error'.
+        data_type -- Type of data, e.g., 'bitcoin' or 'gold'.
+        file_path -- Original path of the file.
+
+    Returns:
+        str -- New file path after moving.
     """
     logger.info(f"Moving file {file_path} to {status} directory for {data_type}")
     try:
@@ -35,6 +43,17 @@ def move_file(status, data_type, file_path):
 
 
 def process_file(data_type, directory, transform_func):
+    """
+    Process all JSON files in the given directory using a transform function.
+
+    Parameters:
+        data_type      -- Type of data being processed.
+        directory      -- Directory containing JSON files.
+        transform_func -- Function to apply on each file.
+
+    Returns:
+        None
+    """
     logger.info(f"Starting {data_type} data Transform process")
 
     if not os.path.exists(directory):
@@ -52,6 +71,15 @@ def process_file(data_type, directory, transform_func):
 
 
 def load_json_file(file_path):
+    """
+    Load a JSON file and return its content as a list of objects.
+
+    Parameters:
+        file_path -- Path to the JSON file.
+
+    Returns:
+        list or None -- List of JSON objects, or None on failure.
+    """
     try:
         with open(file_path, "r") as f:
             file_content = f.read()

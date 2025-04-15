@@ -7,11 +7,40 @@ from etl.transform.logger_transform import logger
 
 
 class BitcoinTransform:
+    """
+    Handles transformation of raw Bitcoin API data files into structured records
+    and loads them into the database.
+
+    Methods:
+        __init__()   -- Initializes with a DB connection
+        transform()  -- Processes and loads data from a single file
+        call()       -- Triggers processing of all files in the directory
+
+    Instance Variables:
+        directory -- Path to the directory containing raw Bitcoin JSON files
+        conn      -- Database connection object (DBConnectorTransform)
+
+    """
     def __init__(self, conn: DBConnectorTransform):
+        """
+        Initialize the transformer with a database connection.
+
+        Parameters:
+            conn -- DBConnectorTransform instance for DB operations
+        """
         self.directory = "../data/raw/bitcoin/"
         self.conn = conn
 
     def transform(self, file_path):
+        """
+        Process a single Bitcoin data file, transform its contents, and insert into DB.
+
+        Parameters:
+            file_path -- Full path to the Bitcoin JSON data file
+
+        Returns:
+            None
+        """
         logger.info(f"Processing bitcoin file: {file_path}")
         data_type = "bitcoin"
         status = "error"
@@ -83,4 +112,10 @@ class BitcoinTransform:
         )
 
     def call(self):
+        """
+        Trigger the transformation process for all files in the Bitcoin data directory.
+
+        Returns:
+            None
+        """
         process_file("Bitcoin", self.directory, self.transform)

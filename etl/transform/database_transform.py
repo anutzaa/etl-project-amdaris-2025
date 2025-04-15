@@ -6,7 +6,40 @@ from etl.transform.logger_transform import logger
 
 
 class DBConnectorTransform(DBConnector):
+    """
+    Extends DBConnector to support data transformation-specific operations,
+    including inserting Bitcoin and Gold data, logging, and table management.
+
+    Methods:
+        upsert_btc_data()        -- Inserts or updates Bitcoin data
+        upsert_gold_data()       -- Inserts or updates Gold data with dynamic rate columns
+        log_transform()          -- Logs file transformation status
+        truncate_import_tables() -- Clears import tables for a fresh load
+        check_rate_columns()     -- Ensures required currency rate columns exist
+
+    Instance Variables:
+        conn   -- Inherited MySQL connection object
+        cursor -- Inherited DB cursor object
+    """
     def upsert_btc_data(self, currency_id, date, open, high, low, close, volume):
+        """
+        Insert or update Bitcoin data in the 'btc_data_import' table.
+
+        This method performs an 'INSERT' operation if the record does not exist,
+        or an 'UPDATE' if the record already exists based on the currency_id and date.
+
+        Parameters:
+            currency_id -- The ID of the currency in the database.
+            date        -- The date of the Bitcoin data.
+            open        -- The opening price of Bitcoin on the given date.
+            high        -- The highest price of Bitcoin on the given date.
+            low         -- The lowest price of Bitcoin on the given date.
+            close       -- The closing price of Bitcoin on the given date.
+            volume      -- The trading volume of Bitcoin on the given date.
+
+        Returns:
+            bool -- True if the upsert operation was successful, False otherwise.
+        """
         try:
             logger.debug(f"Upserting BTC data for currency_id {currency_id}, date {date}")
             query = """
@@ -48,6 +81,29 @@ class DBConnectorTransform(DBConnector):
             price_14k,
             rate_data
     ):
+        """
+        Insert or update Gold data in the 'gold_data_import' table.
+
+        This method performs an 'INSERT' operation if the record does not exist,
+        or an 'UPDATE' if the record already exists based on the currency_id and date.
+        It also supports adding new rate columns if the provided rate data includes new
+        currencies.
+
+        Parameters:
+            currency_id -- The ID of the currency in the database.
+            date        -- The date of the Gold data.
+            open_price  -- The opening price of Gold on the given date.
+            high_price  -- The highest price of Gold on the given date.
+            low_price   -- The lowest price of Gold on the given date.
+            price       -- The price of Gold on the given date.
+            price_24k   -- The 24k Gold price on the given date.
+            price_18k   -- The 18k Gold price on the given date.
+            price_14k   -- The 14k Gold price on the given date.
+            rate_data   -- A dictionary containing rate data for different currencies.
+
+        Returns:
+            bool -- True if the upsert operation was successful, False otherwise.
+        """
         try:
             logger.debug(f"Upserting gold data for currency_id {currency_id}, date {date}")
 
@@ -124,6 +180,22 @@ class DBConnectorTransform(DBConnector):
             return False
 
     def log_transform(self, currency_id, processed_directory_name, processed_file_name, row_count, status):
+        """
+        Logs the details of the data transformation process into the 'transform_log' table.
+
+        This method logs the currency ID, processed file information, number of rows
+        processed, and the transformation status (success or failure).
+
+        Parameters:
+            currency_id              -- The ID of the currency in the database.
+            processed_directory_name -- The directory where the processed file is stored.
+            processed_file_name      -- The name of the processed file.
+            row_count                -- The number of rows processed from the file.
+            status                   -- The status of the transformation (either 'success' or 'error').
+
+        Returns:
+            bool -- True if the log operation was successful, False otherwise.
+        """
         try:
             logger.debug(
                 f"Logging transform: currency_id={currency_id}, file={processed_file_name}, rows={row_count}, status={status}"
@@ -142,6 +214,15 @@ class DBConnectorTransform(DBConnector):
             return False
 
     def truncate_import_tables(self):
+        """
+        Clears all records from the import tables ('btc_data_import' and 'gold_data_import').
+
+        This method executes 'TRUNCATE' commands on the import tables to clear existing
+        records before new data is inserted.
+
+        Returns:
+            bool -- True if the truncate operation was successful, False otherwise.
+        """
         tables = ['transform.btc_data_import', 'transform.gold_data_import']
         logger.info(f"Truncating import tables")
 
@@ -164,6 +245,19 @@ class DBConnectorTransform(DBConnector):
             return False
 
     def check_rate_columns(self, rate_data):
+        """
+        Ensures that columns for currency exchange rates (like 'rate_usd', 'rate_eur')
+        exist in the 'gold_data_import' table and adds them if necessary.
+
+        This method checks for the existence of rate columns in the 'gold_data_import' table
+        and adds missing columns dynamically based on the provided rate data.
+
+        Parameters:
+            rate_data -- A dictionary containing rate data for different currencies.
+
+        Returns:
+            bool -- True if rate columns were successfully verified/added, False if there was an error.
+        """
         logger.debug(f"Ensuring rate columns exist for currencies: {', '.join(rate_data.keys())}")
 
         try:

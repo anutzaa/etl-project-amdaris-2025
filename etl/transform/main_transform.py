@@ -5,6 +5,12 @@ from etl.transform.logger_transform import logger
 
 
 def transform():
+    """
+     Run the full data transformation process.
+
+     This function connects to the database, processes all Bitcoin and Gold files,
+     logs each transformation, and closes the connection.
+    """
     logger.info("Starting Transform process")
 
     logger.info("Connecting to MySQL database")

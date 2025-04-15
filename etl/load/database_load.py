@@ -3,7 +3,22 @@ from etl.load.logger_load import logger
 
 
 class DBConnectorLoad(DBConnector):
+    """
+    Handles data loading operations into the data warehouse.
+
+    Methods:
+        upsert_fact_btc()        -- Load data into fact_btc table
+        upsert_fact_gold()       -- Load data into fact_gold table
+        upsert_exchange_rates()  -- Load exchange rates into fact_exchange_rates
+        upsert_dim_date()        -- Load dates into dim_date from given source
+    """
     def upsert_fact_btc(self):
+        """
+        Inserts new or updated Bitcoin data into the 'fact_btc' table.
+
+        Returns:
+            int -- Number of affected rows
+        """
         logger.info("Starting upsert for fact_btc")
         try:
             query = """
@@ -48,6 +63,12 @@ class DBConnectorLoad(DBConnector):
             return 0
 
     def upsert_fact_gold(self):
+        """
+        Inserts new or updated gold data into the 'fact_gold' table.
+
+        Returns:
+            int -- Number of affected rows
+        """
         logger.info("Starting upsert for fact_gold")
         try:
             insert_query = """
@@ -111,6 +132,15 @@ class DBConnectorLoad(DBConnector):
             return 0
 
     def upsert_exchange_rates(self, currency_code):
+        """
+        Inserts new or updated exchange rate data into the 'fact_exchange_rates' table.
+
+        Parameters:
+            currency_code -- Currency code used to target specific rate column
+
+        Returns:
+            int -- Number of affected rows
+        """
         logger.info(f"Starting upsert for exchange rates: {currency_code}")
         try:
             currency_id = self.get_currency_by_code(currency_code)
@@ -160,6 +190,15 @@ class DBConnectorLoad(DBConnector):
             return 0
 
     def upsert_dim_date(self, source_table):
+        """
+        Inserts new dates from a source table into the 'dim_date' table.
+
+        Parameters:
+            source_table -- name of table containing the date field to load from
+
+        Returns:
+            int -- Number of affected rows
+        """
         logger.info(f"Starting upsert of dim_date from {source_table}")
         try:
             count_query = f"""

@@ -7,11 +7,40 @@ from etl.transform.logger_transform import logger
 
 
 class GoldTransform:
+    """
+    Handles transformation of raw Gold API data files into structured records
+    and loads them into the database.
+
+    Methods:
+        __init__()   -- Initializes with a DB connection
+        transform()  -- Processes and loads data from a single file
+        call()       -- Triggers processing of all files in the directory
+
+    Instance Variables:
+        directory -- Path to the directory containing raw Gold JSON files
+        conn      -- Database connection object (DBConnectorTransform)
+
+    """
     def __init__(self, conn: DBConnectorTransform):
+        """
+        Initialize the transformer with a database connection.
+
+        Parameters:
+            conn -- DBConnectorTransform instance for DB operations
+        """
         self.directory = "../data/raw/gold/"
         self.conn = conn
 
     def transform(self, file_path):
+        """
+        Process a single Gold data file, transform its contents, and insert into DB.
+
+        Parameters:
+            file_path -- Full path to the Gold JSON data file
+
+        Returns:
+            None
+        """
         logger.info(f"Processing gold file: {file_path}")
         data_type = "gold"
         status = "error"
@@ -117,4 +146,10 @@ class GoldTransform:
         )
 
     def call(self):
+        """
+        Trigger the transformation process for all files in the Gold data directory.
+
+        Returns:
+            None
+        """
         process_file("Gold", self.directory, self.transform)

@@ -5,6 +5,13 @@ from etl.extract.logger_extract import logger
 
 
 def extract():
+    """
+     Run the full data extraction process.
+
+     This function establishes a connection to the MySQL database,
+     extracts data from the Bitcoin and Gold APIs, logs the imports,
+     and then closes the DB connection.
+     """
     logger.info("Starting Extract process")
 
     logger.info("Connecting to MySQL database")

@@ -5,6 +5,12 @@ from etl.load.logger_load import logger
 
 
 def load():
+    """
+    Run the full data loading process.
+
+    This function initializes the database connection, processes Bitcoin and Gold data loading,
+    logs each process, then closes the database connection.
+    """
     logger.info("Starting Load process")
 
     conn = DBConnectorLoad(logger=logger)

@@ -4,6 +4,16 @@ from datetime import datetime
 
 
 def setup_logger(app_name, base_dir="../etl"):
+    """
+    Configure and return a logger for the app based on its name.
+
+    Parameters:
+        app_name -- Name of the app for which the logger is to be configured
+        base_dir -- Base directory where logs will be stored (default is "../etl")
+
+    Returns:
+        logger -- Configured logger instance for the app
+    """
     log_dir = os.path.join(base_dir, app_name, "logs")
     os.makedirs(log_dir, exist_ok=True)
 

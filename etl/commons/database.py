@@ -4,7 +4,29 @@ import mysql.connector
 
 
 class DBConnector:
+    """
+       Handles MySQL database connection and currency-related operations.
+
+       Methods:
+           __init__()             -- Initializes with a logger instance
+           connect()              -- Establish connection to the database
+           disconnect()           -- Close the database connection
+           get_currencies()       -- Fetch all currencies from the dim_currency table
+           get_currency_by_code() -- Get currency ID by its code
+           get_rate_cols()        -- Retrieve currency rate columns from gold_data_import
+
+       Instance Variables:
+           conn    -- Active MySQL connection
+           cursor  -- Database cursor
+           logger  -- Logger instance
+       """
     def __init__(self, logger):
+        """
+        Initialize DBConnector with environment-based DB credentials and logger.
+
+        Parameters:
+           logger -- Logger instance of the current app
+        """
         self.host = os.getenv("DB_HOST")
         self.port = os.getenv("DB_PORT")
         self.database = os.getenv("DB_DATABASE")
@@ -15,7 +37,17 @@ class DBConnector:
         self.logger = logger
         logger.debug(f"MySQL connector initialized for database: {self.database}")
 
+        if not all([self.host, self.port, self.database, self.user, self.password]):
+            self.logger.error("Missing required environment variables. Database connection cannot be established.")
+            raise ValueError("Missing required environment variables")
+
     def connect(self):
+        """
+        Establish connection to MySQL database.
+
+        Returns:
+            None
+        """
         try:
             if self.database:
                 self.conn = mysql.connector.connect(
@@ -36,31 +68,67 @@ class DBConnector:
             self.conn = None
 
     def disconnect(self):
+        """
+        Close the database connection and cursor.
+
+        Returns:
+            None
+        """
         if self.conn:
+            self.cursor.close()
             self.conn.close()
             self.logger.info("Disconnected from MySQL database")
 
     def get_currencies(self):
+        """
+        Return a list of (id, code) for all currencies in dim_currency.
+
+        Returns:
+            list -- A list of tuples containing currency IDs and codes
+        """
         self.logger.debug("Fetching currencies from database")
         query = "SELECT Id, code FROM warehouse.dim_currency"
-        self.cursor.execute(query)
-        currencies = self.cursor.fetchall()
-        self.logger.debug(f"Found {len(currencies)} currencies")
-        return currencies
+        try:
+            self.cursor.execute(query)
+            currencies = self.cursor.fetchall()
+            self.logger.debug(f"Found {len(currencies)} currencies")
+            return currencies
+        except mysql.connector.Error as e:
+            self.logger.error(f"Error fetching currencies: {e}")
+            return []
 
     def get_currency_by_code(self, code):
+        """
+        Return the ID of a currency given its code.
+
+        Parameters:
+            code -- 3-letter currency code (e.g., 'USD')
+
+        Returns:
+            int or None -- Currency ID if found, otherwise None
+        """
         self.logger.debug(f"Looking up currency ID for code: {code}")
         query = "SELECT Id FROM warehouse.dim_currency WHERE code = %s"
-        self.cursor.execute(query, (code,))
-        result = self.cursor.fetchone()
+        try:
+            self.cursor.execute(query, (code,))
+            result = self.cursor.fetchone()
 
-        if result:
-            self.logger.debug(f"Found currency ID {result[0]} for code {code}")
-            return int(result[0])
-        self.logger.warning(f"No currency found for code: {code}")
-        return None
+            if result:
+                self.logger.debug(f"Found currency ID {result[0]} for code {code}")
+                return int(result[0])
+            self.logger.warning(f"No currency found for code: {code}")
+            return None
+        except mysql.connector.Error as e:
+            self.logger.error(f"Error retrieving currency by code: {e}")
+            return None
 
     def get_rate_cols(self):
+        """
+        Return a list of currency codes from rate columns in gold_data_import.
+
+        Returns:
+            list -- A list of currency codes (e.g., ['USD', 'EUR'])
+        """
         self.logger.debug("Retrieving rate columns from gold_data_import")
         try:
             column_query = """
