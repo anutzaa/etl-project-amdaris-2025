@@ -1,7 +1,7 @@
 from etl.load.btc_load import BitcoinLoad
 from etl.load.gold_load import GoldLoad
-from etl.load.database import DBConnectorLoad
-from etl.load.logger import logger
+from etl.load.database_load import DBConnectorLoad
+from etl.load.logger_load import logger
 
 
 def load():

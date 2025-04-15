@@ -1,7 +1,8 @@
+import re
 from datetime import datetime
 
 from etl.commons.database import DBConnector
-from etl.transform.logger import logger
+from etl.transform.logger_transform import logger
 
 
 class DBConnectorTransform(DBConnector):
@@ -21,7 +22,7 @@ class DBConnectorTransform(DBConnector):
             values = (currency_id, date, open, high, low, close, volume)
 
             self.cursor.execute(query, values)
-            self.connection.commit()
+            self.conn.commit()
 
             if self.cursor.rowcount == 1:
                 logger.debug(f"Inserted new record for currency_id {currency_id}, date {date}")
@@ -30,7 +31,7 @@ class DBConnectorTransform(DBConnector):
             return True
 
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error in upsert_btc_data: {str(e)}", exc_info=True)
             return False
 
@@ -109,7 +110,7 @@ class DBConnectorTransform(DBConnector):
                      ] + rate_values
 
             self.cursor.execute(query, values)
-            self.connection.commit()
+            self.conn.commit()
 
             if self.cursor.rowcount == 1:
                 logger.debug(f"Inserted new record for currency_id {currency_id}, date {date}")
@@ -118,7 +119,7 @@ class DBConnectorTransform(DBConnector):
 
             return True
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error in upsert_gold_data: {str(e)}", exc_info=True)
             return False
 
@@ -133,10 +134,10 @@ class DBConnectorTransform(DBConnector):
                   """
             values = (datetime.today(), currency_id, processed_directory_name, processed_file_name, row_count, status)
             self.cursor.execute(query, values)
-            self.connection.commit()
+            self.conn.commit()
             logger.info(f"Transform log entry created successfully")
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error in log_transform: {str(e)}", exc_info=True)
             return False
 
@@ -153,12 +154,12 @@ class DBConnectorTransform(DBConnector):
 
             self.cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
-            self.connection.commit()
+            self.conn.commit()
             logger.info("All import tables truncated successfully")
             return True
 
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error truncating import tables: {str(e)}", exc_info=True)
             return False
 
@@ -170,6 +171,9 @@ class DBConnectorTransform(DBConnector):
             columns_already_exist = 0
 
             for currency_code in rate_data.keys():
+                if not re.match(r'^[A-Z]{3}$', currency_code):
+                    raise ValueError(f"Invalid currency code: {currency_code}")
+
                 column_name = f"rate_{currency_code.lower()}"
 
                 self.cursor.execute(f"""
@@ -186,7 +190,7 @@ class DBConnectorTransform(DBConnector):
                         ALTER TABLE transform.gold_data_import 
                         ADD COLUMN {column_name} DECIMAL(18,6) NULL
                     """)
-                    self.connection.commit()
+                    self.conn.commit()
                     columns_added += 1
                 else:
                     columns_already_exist += 1
@@ -198,6 +202,6 @@ class DBConnectorTransform(DBConnector):
             return True
 
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error ensuring rate columns exist: {str(e)}", exc_info=True)
             return False

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from etl.commons.database import DBConnector
-from etl.extract.logger import logger
+from etl.extract.logger_extract import logger
 
 
 class DBConnectorExtract(DBConnector):
@@ -32,7 +32,7 @@ class DBConnectorExtract(DBConnector):
             row_count,
         )
         self.cursor.execute(query, values)
-        self.connection.commit()
+        self.conn.commit()
         logger.debug("Import logged successfully")
 
     def log_api_import(
@@ -60,5 +60,5 @@ class DBConnectorExtract(DBConnector):
             error_messages,
         )
         self.cursor.execute(query, values)
-        self.connection.commit()
+        self.conn.commit()
         logger.debug("API import logged successfully")

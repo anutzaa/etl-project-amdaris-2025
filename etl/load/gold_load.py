@@ -1,5 +1,5 @@
-from etl.load.database import DBConnectorLoad
-from etl.load.logger import logger
+from etl.load.database_load import DBConnectorLoad
+from etl.load.logger_load import logger
 
 
 class GoldLoad:
@@ -13,12 +13,12 @@ class GoldLoad:
         logger.info("Loading data into fact_gold from staging table")
         try:
             rows = self.conn.upsert_fact_gold()
-            self.conn.connection.commit()
+            self.conn.conn.commit()
             logger.info(f"Total data loaded into fact_gold: {rows} rows affected")
             return True
 
         except Exception as e:
-            self.conn.connection.rollback()
+            self.conn.conn.rollback()
             logger.error(f"Error loading fact_gold: {str(e)}", exc_info=True)
             return False
 
@@ -34,12 +34,12 @@ class GoldLoad:
                 if rows:
                     total_rows_affected += rows
 
-            self.conn.connection.commit()
+            self.conn.conn.commit()
             logger.info(f"Total data loaded into fact_exchange_rates: {total_rows_affected} rows affected")
             return True
 
         except Exception as e:
-            self.conn.connection.rollback()
+            self.conn.conn.rollback()
             logger.error(f"Error loading fact_exchange_rates: {str(e)}", exc_info=True)
             return False
 

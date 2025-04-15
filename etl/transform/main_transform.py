@@ -1,7 +1,7 @@
 from etl.transform.btc_transform import BitcoinTransform
 from etl.transform.gold_transform import GoldTransform
-from etl.transform.database import DBConnectorTransform
-from etl.transform.logger import logger
+from etl.transform.database_transform import DBConnectorTransform
+from etl.transform.logger_transform import logger
 
 
 def transform():

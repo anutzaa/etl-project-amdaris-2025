@@ -1,9 +1,9 @@
 import os
 from datetime import datetime
 
-from etl.transform.database import DBConnectorTransform
-from etl.transform.utils import move_file, process_file, load_json_file
-from etl.transform.logger import logger
+from etl.transform.database_transform import DBConnectorTransform
+from etl.transform.utils_transform import move_file, process_file, load_json_file
+from etl.transform.logger_transform import logger
 
 
 class GoldTransform:

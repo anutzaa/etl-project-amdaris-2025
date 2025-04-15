@@ -1,5 +1,5 @@
-from etl.load.database import DBConnectorLoad
-from etl.load.logger import logger
+from etl.load.database_load import DBConnectorLoad
+from etl.load.logger_load import logger
 
 
 class BitcoinLoad:
@@ -13,11 +13,11 @@ class BitcoinLoad:
         logger.info("Loading data into fact_btc from staging table")
         try:
             rows = self.conn.upsert_fact_btc()
-            self.conn.connection.commit()
+            self.conn.conn.commit()
             logger.info(f"Total data loaded into fact_btc: {rows} rows affected")
             return True
         except Exception as e:
-            self.conn.connection.rollback()
+            self.conn.conn.rollback()
             logger.error(f"Error loading fact_btc: {str(e)}", exc_info=True)
             return False
 

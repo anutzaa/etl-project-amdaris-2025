@@ -1,7 +1,7 @@
 from etl.extract.btc_extract import BitcoinExtract
 from etl.extract.gold_extract import GoldExtract
-from etl.extract.database import DBConnectorExtract
-from etl.extract.logger import logger
+from etl.extract.database_extract import DBConnectorExtract
+from etl.extract.logger_extract import logger
 
 
 def extract():

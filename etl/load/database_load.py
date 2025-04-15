@@ -1,5 +1,5 @@
 from etl.commons.database import DBConnector
-from etl.load.logger import logger
+from etl.load.logger_load import logger
 
 
 class DBConnectorLoad(DBConnector):
@@ -43,7 +43,7 @@ class DBConnectorLoad(DBConnector):
             return rows
 
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error upserting fact_btc: {str(e)}", exc_info=True)
             return 0
 
@@ -106,7 +106,7 @@ class DBConnectorLoad(DBConnector):
             return rows
 
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error upserting fact_gold: {str(e)}", exc_info=True)
             return 0
 
@@ -155,7 +155,7 @@ class DBConnectorLoad(DBConnector):
             return rows
 
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error upserting exchange rates for {currency_code}: {str(e)}", exc_info=True)
             return 0
 
@@ -167,6 +167,7 @@ class DBConnectorLoad(DBConnector):
                 FROM {source_table}
                 WHERE date NOT IN (SELECT date FROM warehouse.dim_date)
             """
+
             self.cursor.execute(count_query)
             date_count = self.cursor.fetchone()[0]
 
@@ -209,11 +210,11 @@ class DBConnectorLoad(DBConnector):
 
             self.cursor.execute(insert_query)
             rows = self.cursor.rowcount
-            self.connection.commit()
+            self.conn.commit()
             logger.info(f"Upserted {rows} rows into dim_date")
             return rows
 
         except Exception as e:
-            self.connection.rollback()
+            self.conn.rollback()
             logger.error(f"Error upserting dim_date from {source_table}: {str(e)}", exc_info=True)
             return 0

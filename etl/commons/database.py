@@ -10,7 +10,7 @@ class DBConnector:
         self.database = os.getenv("DB_DATABASE")
         self.user = os.getenv("DB_USER")
         self.password = os.getenv("DB_PASSWORD")
-        self.connection = None
+        self.conn = None
         self.cursor = None
         self.logger = logger
         logger.debug(f"MySQL connector initialized for database: {self.database}")
@@ -18,7 +18,7 @@ class DBConnector:
     def connect(self):
         try:
             if self.database:
-                self.connection = mysql.connector.connect(
+                self.conn = mysql.connector.connect(
                     host=self.host,
                     port=self.port,
                     user=self.user,
@@ -26,18 +26,18 @@ class DBConnector:
                     database=self.database,
                 )
             else:
-                self.connection = mysql.connector.connect(
+                self.conn = mysql.connector.connect(
                     host=self.host, user=self.user, password=self.password
                 )
-            self.cursor = self.connection.cursor()
+            self.cursor = self.conn.cursor()
             self.logger.info(f"Connected to MySQL database: {self.database}")
         except mysql.connector.Error as error:
             self.logger.info(f"Error connecting to MySQL: {error}")
-            self.connection = None
+            self.conn = None
 
     def disconnect(self):
-        if self.connection:
-            self.connection.close()
+        if self.conn:
+            self.conn.close()
             self.logger.info("Disconnected from MySQL database")
 
     def get_currencies(self):

@@ -2,9 +2,9 @@ from datetime import datetime
 import requests
 import os
 
-from etl.extract.utils import save_to_file, process_api_response
-from etl.extract.database import DBConnectorExtract
-from etl.extract.logger import logger
+from etl.extract.utils_extract import save_to_file, process_api_response
+from etl.extract.database_extract import DBConnectorExtract
+from etl.extract.logger_extract import logger
 
 
 class BitcoinExtract:
