@@ -57,3 +57,24 @@ class DBConnector:
             return int(result[0])
         self.logger.warning(f"No currency found for code: {code}")
         return None
+
+    def get_rate_cols(self):
+        self.logger.debug("Retrieving rate columns from gold_data_import")
+        try:
+            column_query = """
+                        SELECT column_name 
+                        FROM information_schema.columns 
+                        WHERE table_schema = 'transform' 
+                        AND table_name = 'gold_data_import' 
+                        AND column_name LIKE 'rate_%'
+                        """
+            self.cursor.execute(column_query)
+            rate_columns = [row[0] for row in self.cursor.fetchall()]
+
+            currency_codes = [column[5:].upper() for column in rate_columns]
+            self.logger.debug(f"Found rate columns for currencies: {', '.join(currency_codes)}")
+
+            return currency_codes
+        except Exception as e:
+            self.logger.error(f"Error retrieving rate columns: {str(e)}", exc_info=True)
+            return []

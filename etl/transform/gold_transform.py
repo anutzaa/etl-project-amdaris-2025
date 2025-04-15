@@ -66,17 +66,21 @@ class GoldTransform:
                     high_price = float(metal_prices.get("high"))
                     low_price = float(metal_prices.get("low"))
                     price = float(metal_prices.get("price"))
-
                     price_24k = float(metal_prices.get("price_24k"))
                     price_18k = float(metal_prices.get("price_18k"))
                     price_14k = float(metal_prices.get("price_14k"))
 
-                    rate_usd = float(currency_rates.get("USD"))
-                    rate_eur = float(currency_rates.get("EUR"))
-                    rate_gbp = float(currency_rates.get("GBP"))
+                    rate_data = {}
+                    for currency_code, rate_value in currency_rates.items():
+                        try:
+                            rate_data[currency_code.upper()] = float(rate_value)
+                        except (ValueError, TypeError):
+                            logger.warning(f"Invalid rate value for {currency_code}: {rate_value}")
+
+                    logger.debug(f"Found {len(rate_data)} currency rates")
 
                     logger.debug(f"Upserting gold data for currency_id {currency_id}, date {date}")
-                    self.conn.upsert_gold_data(
+                    result = self.conn.upsert_gold_data(
                         currency_id,
                         date,
                         open_price,
@@ -86,12 +90,12 @@ class GoldTransform:
                         price_24k,
                         price_18k,
                         price_14k,
-                        rate_usd,
-                        rate_eur,
-                        rate_gbp,
+                        rate_data
                     )
 
-                    processed_count += 1
+                    if result:
+                        processed_count += 1
+
                 except Exception as e:
                     logger.error(f"Error processing gold data: {str(e)}", exc_info=True)
 
