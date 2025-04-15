@@ -1,8 +1,8 @@
 import mysql.connector
 
 
-class MySQLConnector:
-    def __init__(self, host, port, database, user, password):
+class DBConnector:
+    def __init__(self, host, port, database, user, password, logger):
         self.host = host
         self.port = port
         self.database = database
@@ -10,7 +10,8 @@ class MySQLConnector:
         self.password = password
         self.connection = None
         self.cursor = None
-        # logger.debug(f"MySQL connector initialized for database: {database}")
+        self.logger = logger
+        logger.debug(f"MySQL connector initialized for database: {database}")
 
     def connect(self):
         try:
@@ -27,32 +28,32 @@ class MySQLConnector:
                     host=self.host, user=self.user, password=self.password
                 )
             self.cursor = self.connection.cursor()
-            # logger.info(f"Connected to MySQL database: {self.database}")
+            self.logger.info(f"Connected to MySQL database: {self.database}")
         except mysql.connector.Error as error:
-            # logger.info(f"Error connecting to MySQL: {error}")
+            self.logger.info(f"Error connecting to MySQL: {error}")
             self.connection = None
 
     def disconnect(self):
         if self.connection:
             self.connection.close()
-            # logger.info("Disconnected from MySQL database")
+            self.logger.info("Disconnected from MySQL database")
 
     def get_currencies(self):
-        # logger.debug("Fetching currencies from database")
+        self.logger.debug("Fetching currencies from database")
         query = "SELECT Id, code FROM warehouse.dim_currency"
         self.cursor.execute(query)
         currencies = self.cursor.fetchall()
-        # logger.debug(f"Found {len(currencies)} currencies")
+        self.logger.debug(f"Found {len(currencies)} currencies")
         return currencies
 
     def get_currency_by_code(self, code):
-        # logger.debug(f"Looking up currency ID for code: {code}")
+        self.logger.debug(f"Looking up currency ID for code: {code}")
         query = "SELECT Id FROM warehouse.dim_currency WHERE code = %s"
         self.cursor.execute(query, (code,))
         result = self.cursor.fetchone()
 
         if result:
-            # logger.debug(f"Found currency ID {result[0]} for code {code}")
+            self.logger.debug(f"Found currency ID {result[0]} for code {code}")
             return int(result[0])
-        # logger.warning(f"No currency found for code: {code}")
+        self.logger.warning(f"No currency found for code: {code}")
         return None

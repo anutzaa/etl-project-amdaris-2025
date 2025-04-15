@@ -1,8 +1,8 @@
-from etl.commons.mysql_conn import MySQLConnector
+from etl.commons.database import DBConnector
 from etl.load.logger import logger
 
 
-class MySQLConnectorLoad(MySQLConnector):
+class DBConnectorLoad(DBConnector):
     def upsert_fact_btc(self):
         logger.info("Starting upsert for fact_btc")
         try:

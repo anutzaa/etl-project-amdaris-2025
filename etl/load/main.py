@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from etl.load.btc_load import BitcoinLoad
 from etl.load.gold_load import GoldLoad
-from etl.load.mysql_conn import MySQLConnectorLoad
+from etl.load.database import DBConnectorLoad
 from etl.load.logger import logger
 
 
@@ -20,7 +20,13 @@ def load():
     DB_PASSWORD = os.getenv("DB_PASSWORD")
     DB_DATABASE = os.getenv("DB_DATABASE")
 
-    conn = MySQLConnectorLoad(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
+    conn = DBConnectorLoad(
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_DATABASE,
+        logger=logger)
 
     conn.connect()
 

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from etl.transform.btc_transform import BitcoinTransform
 from etl.transform.gold_transform import GoldTransform
-from etl.transform.mysql_conn import MySQLConnectorTransform
+from etl.transform.database import DBConnectorTransform
 from etl.transform.logger import logger
 
 
@@ -21,7 +21,13 @@ def transform():
     DB_DATABASE = os.getenv("DB_DATABASE")
 
     logger.info("Connecting to MySQL database")
-    conn = MySQLConnectorTransform(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
+    conn = DBConnectorTransform(
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_DATABASE,
+        logger=logger)
 
     conn.connect()
     conn.truncate_import_tables()

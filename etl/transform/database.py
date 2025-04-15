@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from etl.commons.mysql_conn import MySQLConnector
+from etl.commons.database import DBConnector
 from etl.transform.logger import logger
 
 
-class MySQLConnectorTransform(MySQLConnector):
+class DBConnectorTransform(DBConnector):
     def upsert_btc_data(self, currency_id, date, open, high, low, close, volume):
         try:
             logger.debug(f"Upserting BTC data for currency_id {currency_id}, date {date}")

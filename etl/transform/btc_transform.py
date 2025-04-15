@@ -1,13 +1,13 @@
 import os
 from datetime import datetime
 
-from etl.transform.mysql_conn import MySQLConnectorTransform
+from etl.transform.database import DBConnectorTransform
 from etl.transform.utils import move_file, process_file, load_json_file
 from etl.transform.logger import logger
 
 
 class BitcoinTransform:
-    def __init__(self, conn: MySQLConnectorTransform):
+    def __init__(self, conn: DBConnectorTransform):
         self.directory = "../data/raw/bitcoin/"
         self.conn = conn
 

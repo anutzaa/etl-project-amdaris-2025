@@ -1,9 +1,9 @@
-from etl.load.mysql_conn import MySQLConnectorLoad
+from etl.load.database import DBConnectorLoad
 from etl.load.logger import logger
 
 
 class GoldLoad:
-    def __init__(self, conn:MySQLConnectorLoad):
+    def __init__(self, conn:DBConnectorLoad):
         self.conn = conn
 
     def load_dim_date(self):

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from etl.commons.mysql_conn import MySQLConnector
+from etl.commons.database import DBConnector
 from etl.extract.logger import logger
 
 
-class MySQLConnectorExtract(MySQLConnector):
+class DBConnectorExtract(DBConnector):
     def log_import(
         self,
         currency_id,

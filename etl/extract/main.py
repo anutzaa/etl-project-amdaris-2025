@@ -1,9 +1,9 @@
 import os
 from dotenv import load_dotenv
 
-from etl.extract.btc_api import BitcoinAPI
-from etl.extract.gold_api import GoldAPI
-from etl.extract.mysql_conn import MySQLConnector
+from etl.extract.btc_extract import BitcoinExtract
+from etl.extract.gold_extract import GoldExtract
+from etl.extract.database import DBConnectorExtract
 from etl.extract.logger import logger
 
 
@@ -23,23 +23,24 @@ def extract():
     DB_DATABASE = os.getenv("DB_DATABASE")
 
     logger.info("Connecting to MySQL database")
-    conn = MySQLConnector(
+    conn = DBConnectorExtract(
         host=DB_HOST,
         port=DB_PORT,
         user=DB_USER,
         password=DB_PASSWORD,
-        database=DB_DATABASE
+        database=DB_DATABASE,
+        logger=logger
     )
 
     conn.connect()
 
     logger.info("Starting Bitcoin API data extraction")
-    btc = BitcoinAPI(BTC_API_KEY, conn)
+    btc = BitcoinExtract(BTC_API_KEY, conn)
     btc.call()
     logger.info("Bitcoin API data extraction complete")
 
     logger.info("Starting Gold API data extraction")
-    gold = GoldAPI(GOLD_API_KEY, conn)
+    gold = GoldExtract(GOLD_API_KEY, conn)
     gold.call()
     logger.info("Gold API data extraction complete")
 
