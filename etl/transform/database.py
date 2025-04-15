@@ -24,9 +24,9 @@ class DBConnectorTransform(DBConnector):
             self.connection.commit()
 
             if self.cursor.rowcount == 1:
-                logger.info(f"Inserted new record for currency_id {currency_id}, date {date}")
+                logger.debug(f"Inserted new record for currency_id {currency_id}, date {date}")
             elif self.cursor.rowcount == 2:
-                logger.info(f"Updated record for currency_id {currency_id}, date {date}")
+                logger.debug(f"Updated record for currency_id {currency_id}, date {date}")
             return True
 
         except Exception as e:
@@ -88,9 +88,9 @@ class DBConnectorTransform(DBConnector):
             self.connection.commit()
 
             if self.cursor.rowcount == 1:
-                logger.info(f"Inserted new record for currency_id {currency_id}, date {date}")
+                logger.debug(f"Inserted new record for currency_id {currency_id}, date {date}")
             elif self.cursor.rowcount == 2:
-                logger.info(f"Updated record for currency_id {currency_id}, date {date}")
+                logger.debug(f"Updated record for currency_id {currency_id}, date {date}")
 
             return True
         except Exception as e:

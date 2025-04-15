@@ -64,7 +64,7 @@ CREATE TABLE fact_exchange_rates(
     date DATE NOT NULL,
     base_currency_id INT NOT NULL,
     target_currency_id INT NOT NULL,
-    rate DECIMAL(6,5) NOT NULL,
+    rate DECIMAL(16,5) NOT NULL,
     created_at TIMESTAMP(4) NOT NULL,
     updated_at TIMESTAMP(4) NOT NULL,
     FOREIGN KEY (base_currency_id) REFERENCES dim_currency(Id),

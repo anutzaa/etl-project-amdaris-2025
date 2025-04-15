@@ -13,7 +13,14 @@ CREATE TABLE dim_currency (
 INSERT INTO dim_currency(code, name)
 VALUES('EUR', 'Euro'),
       ('USD', 'United States Dollar'),
-      ('GBP', 'British Pound Sterling');
+      ('GBP', 'British Pound Sterling'),
+      ('AED','United Arab Emirates Dirham'),
+      ('BGN','Bulgarian Lev'),
+      ('CAD','Canadian Dollar'),
+      ('CHF','Swiss Franc'),
+      ('RON','Romanian Leu'),
+      ('TRY','Turkish Lira'),
+      ('UAH','Ukrainian Hryvnia');
 
 
 # Extract schema
