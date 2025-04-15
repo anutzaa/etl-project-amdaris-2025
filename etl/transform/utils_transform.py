@@ -17,7 +17,9 @@ def move_file(status, data_type, file_path):
     Returns:
         str -- New file path after moving.
     """
-    logger.info(f"Moving file {file_path} to {status} directory for {data_type}")
+    logger.info(
+        f"Moving file {file_path} to {status} directory for {data_type}"
+    )
     try:
         base_dir = os.path.normpath("../data")
         logger.debug(f"Base directory: {base_dir}")
@@ -34,7 +36,9 @@ def move_file(status, data_type, file_path):
         logger.debug(f"Moving from {file_path} to {new_file_path}")
         shutil.move(file_path, new_file_path)
 
-        logger.info(f"Successfully moved file from {file_path} to {new_file_path}")
+        logger.info(
+            f"Successfully moved file from {file_path} to {new_file_path}"
+        )
         return new_file_path
 
     except Exception as e:

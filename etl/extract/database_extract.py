@@ -12,6 +12,7 @@ class DBConnectorExtract(DBConnector):
         log_import()      -- Insert metadata about file-based data imports
         log_api_import()  -- Insert metadata about API-based data imports
     """
+
     def log_import(
         self,
         currency_id,
@@ -40,9 +41,9 @@ class DBConnectorExtract(DBConnector):
                 f"Logging import for currency_id: {currency_id}, file: {import_file_name}, rows: {row_count}"
             )
             query = """
-            INSERT INTO extract.import_log (batch_date, currency_id, import_directory_name, import_file_name, 
-            file_created_date, file_last_modified_date, row_count)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO extract.import_log (batch_date, currency_id, import_directory_name, import_file_name, 
+                    file_created_date, file_last_modified_date, row_count)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
             values = (
                 datetime.today(),
@@ -87,7 +88,8 @@ class DBConnectorExtract(DBConnector):
                 f"Logging API import for currency_id: {currency_id}, api_id: {api_id}"
             )
             query = """
-                    INSERT INTO extract.api_import_log (currency_id, api_id, start_time, end_time, code_response, error_messages)
+                    INSERT INTO extract.api_import_log (currency_id, api_id, start_time, end_time, code_response, 
+                    error_messages)
                     VALUES (%s, %s, %s, %s, %s, %s)
                     """
             values = (

@@ -2,7 +2,11 @@ import os
 from datetime import datetime
 
 from etl.transform.database_transform import DBConnectorTransform
-from etl.transform.utils_transform import move_file, process_file, load_json_file
+from etl.transform.utils_transform import (
+    move_file,
+    process_file,
+    load_json_file,
+)
 from etl.transform.logger_transform import logger
 
 
@@ -21,6 +25,7 @@ class GoldTransform:
         conn      -- Database connection object (DBConnectorTransform)
 
     """
+
     def __init__(self, conn: DBConnectorTransform):
         """
         Initialize the transformer with a database connection.
@@ -54,7 +59,10 @@ class GoldTransform:
                 return
 
             for data_obj in data_list:
-                if data_obj.get("status") != "success" or "data" not in data_obj:
+                if (
+                    data_obj.get("status") != "success"
+                    or "data" not in data_obj
+                ):
                     logger.warning(f"Invalid data format in file: {file_path}")
                     continue
 
@@ -62,14 +70,20 @@ class GoldTransform:
 
                 base_currency = data.get("base_currency", "")
                 if not base_currency:
-                    logger.warning(f"No base currency found in file: {file_path}")
+                    logger.warning(
+                        f"No base currency found in file: {file_path}"
+                    )
                     continue
 
-                logger.debug(f"Processing data for base currency: {base_currency}")
+                logger.debug(
+                    f"Processing data for base currency: {base_currency}"
+                )
                 currency_id = self.conn.get_currency_by_code(base_currency)
 
                 if not currency_id:
-                    logger.warning(f"No currency ID found for code: {base_currency}")
+                    logger.warning(
+                        f"No currency ID found for code: {base_currency}"
+                    )
                     continue
 
                 timestamp_ms = data.get("timestamp")
@@ -82,12 +96,16 @@ class GoldTransform:
 
                 metal_prices = data.get("metal_prices", {}).get("XAU", {})
                 if not metal_prices:
-                    logger.warning(f"No XAU metal prices found in file: {file_path}")
+                    logger.warning(
+                        f"No XAU metal prices found in file: {file_path}"
+                    )
                     continue
 
                 currency_rates = data.get("currency_rates", {})
                 if not currency_rates:
-                    logger.warning(f"No currency rates found in file: {file_path}")
+                    logger.warning(
+                        f"No currency rates found in file: {file_path}"
+                    )
                     continue
 
                 try:
@@ -102,13 +120,19 @@ class GoldTransform:
                     rate_data = {}
                     for currency_code, rate_value in currency_rates.items():
                         try:
-                            rate_data[currency_code.upper()] = float(rate_value)
+                            rate_data[currency_code.upper()] = float(
+                                rate_value
+                            )
                         except (ValueError, TypeError):
-                            logger.warning(f"Invalid rate value for {currency_code}: {rate_value}")
+                            logger.warning(
+                                f"Invalid rate value for {currency_code}: {rate_value}"
+                            )
 
                     logger.debug(f"Found {len(rate_data)} currency rates")
 
-                    logger.debug(f"Upserting gold data for currency_id {currency_id}, date {date}")
+                    logger.debug(
+                        f"Upserting gold data for currency_id {currency_id}, date {date}"
+                    )
                     result = self.conn.upsert_gold_data(
                         currency_id,
                         date,
@@ -119,30 +143,40 @@ class GoldTransform:
                         price_24k,
                         price_18k,
                         price_14k,
-                        rate_data
+                        rate_data,
                     )
 
                     if result:
                         processed_count += 1
 
                 except Exception as e:
-                    logger.error(f"Error processing gold data: {str(e)}", exc_info=True)
+                    logger.error(
+                        f"Error processing gold data: {str(e)}", exc_info=True
+                    )
 
             if processed_count > 0:
                 status = "processed"
-                logger.info(f"Successfully processed {processed_count} data points from file: {file_path}")
+                logger.info(
+                    f"Successfully processed {processed_count} data points from file: {file_path}"
+                )
             else:
                 logger.warning(f"No data processed from file: {file_path}")
 
         except Exception as e:
-            logger.error(f"Error processing file {file_path}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error processing file {file_path}: {str(e)}", exc_info=True
+            )
             status = "error"
 
         new_file_path = move_file(status, data_type, file_path)
 
         logger.info(f"Logging transformation for file {file_path}")
         self.conn.log_transform(
-            currency_id, os.path.dirname(new_file_path), os.path.basename(new_file_path), processed_count, status
+            currency_id,
+            os.path.dirname(new_file_path),
+            os.path.basename(new_file_path),
+            processed_count,
+            status,
         )
 
     def call(self):

@@ -15,6 +15,7 @@ class BitcoinLoad:
     Instance Variables:
         conn -- DBConnectorLoad instance for DB operations
     """
+
     def __init__(self, conn: DBConnectorLoad):
         """
         Initializes BitcoinLoad with a database connection.
@@ -31,7 +32,7 @@ class BitcoinLoad:
         Returns:
             None
         """
-        self.conn.upsert_dim_date('transform.btc_data_import')
+        self.conn.upsert_dim_date("transform.btc_data_import")
 
     def load_fact_bitcoin(self):
         """
@@ -44,7 +45,9 @@ class BitcoinLoad:
         try:
             rows = self.conn.upsert_fact_btc()
             self.conn.conn.commit()
-            logger.info(f"Total data loaded into fact_btc: {rows} rows affected")
+            logger.info(
+                f"Total data loaded into fact_btc: {rows} rows affected"
+            )
             return True
         except Exception as e:
             self.conn.conn.rollback()

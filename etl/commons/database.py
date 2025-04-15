@@ -5,21 +5,22 @@ import mysql.connector
 
 class DBConnector:
     """
-       Handles MySQL database connection and currency-related operations.
+    Handles MySQL database connection and currency-related operations.
 
-       Methods:
-           __init__()             -- Initializes with a logger instance
-           connect()              -- Establish connection to the database
-           disconnect()           -- Close the database connection
-           get_currencies()       -- Fetch all currencies from the dim_currency table
-           get_currency_by_code() -- Get currency ID by its code
-           get_rate_cols()        -- Retrieve currency rate columns from gold_data_import
+    Methods:
+        __init__()             -- Initializes with a logger instance
+        connect()              -- Establish connection to the database
+        disconnect()           -- Close the database connection
+        get_currencies()       -- Fetch all currencies from the dim_currency table
+        get_currency_by_code() -- Get currency ID by its code
+        get_rate_cols()        -- Retrieve currency rate columns from gold_data_import
 
-       Instance Variables:
-           conn    -- Active MySQL connection
-           cursor  -- Database cursor
-           logger  -- Logger instance
-       """
+    Instance Variables:
+        conn    -- Active MySQL connection
+        cursor  -- Database cursor
+        logger  -- Logger instance
+    """
+
     def __init__(self, logger):
         """
         Initialize DBConnector with environment-based DB credentials and logger.
@@ -35,10 +36,16 @@ class DBConnector:
         self.conn = None
         self.cursor = None
         self.logger = logger
-        logger.debug(f"MySQL connector initialized for database: {self.database}")
+        logger.debug(
+            f"MySQL connector initialized for database: {self.database}"
+        )
 
-        if not all([self.host, self.port, self.database, self.user, self.password]):
-            self.logger.error("Missing required environment variables. Database connection cannot be established.")
+        if not all(
+            [self.host, self.port, self.database, self.user, self.password]
+        ):
+            self.logger.error(
+                "Missing required environment variables. Database connection cannot be established."
+            )
             raise ValueError("Missing required environment variables")
 
     def connect(self):
@@ -114,7 +121,9 @@ class DBConnector:
             result = self.cursor.fetchone()
 
             if result:
-                self.logger.debug(f"Found currency ID {result[0]} for code {code}")
+                self.logger.debug(
+                    f"Found currency ID {result[0]} for code {code}"
+                )
                 return int(result[0])
             self.logger.warning(f"No currency found for code: {code}")
             return None
@@ -142,9 +151,13 @@ class DBConnector:
             rate_columns = [row[0] for row in self.cursor.fetchall()]
 
             currency_codes = [column[5:].upper() for column in rate_columns]
-            self.logger.debug(f"Found rate columns for currencies: {', '.join(currency_codes)}")
+            self.logger.debug(
+                f"Found rate columns for currencies: {', '.join(currency_codes)}"
+            )
 
             return currency_codes
         except Exception as e:
-            self.logger.error(f"Error retrieving rate columns: {str(e)}", exc_info=True)
+            self.logger.error(
+                f"Error retrieving rate columns: {str(e)}", exc_info=True
+            )
             return []

@@ -21,7 +21,10 @@ class DBConnectorTransform(DBConnector):
         conn   -- Inherited MySQL connection object
         cursor -- Inherited DB cursor object
     """
-    def upsert_btc_data(self, currency_id, date, open, high, low, close, volume):
+
+    def upsert_btc_data(
+        self, currency_id, date, open, high, low, close, volume
+    ):
         """
         Insert or update Bitcoin data in the 'btc_data_import' table.
 
@@ -41,7 +44,9 @@ class DBConnectorTransform(DBConnector):
             bool -- True if the upsert operation was successful, False otherwise.
         """
         try:
-            logger.debug(f"Upserting BTC data for currency_id {currency_id}, date {date}")
+            logger.debug(
+                f"Upserting BTC data for currency_id {currency_id}, date {date}"
+            )
             query = """
             INSERT INTO transform.btc_data_import (currency_id, date, open, high, low, close, volume)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -58,9 +63,13 @@ class DBConnectorTransform(DBConnector):
             self.conn.commit()
 
             if self.cursor.rowcount == 1:
-                logger.debug(f"Inserted new record for currency_id {currency_id}, date {date}")
+                logger.debug(
+                    f"Inserted new record for currency_id {currency_id}, date {date}"
+                )
             elif self.cursor.rowcount == 2:
-                logger.debug(f"Updated record for currency_id {currency_id}, date {date}")
+                logger.debug(
+                    f"Updated record for currency_id {currency_id}, date {date}"
+                )
             return True
 
         except Exception as e:
@@ -69,17 +78,17 @@ class DBConnectorTransform(DBConnector):
             return False
 
     def upsert_gold_data(
-            self,
-            currency_id,
-            date,
-            open_price,
-            high_price,
-            low_price,
-            price,
-            price_24k,
-            price_18k,
-            price_14k,
-            rate_data
+        self,
+        currency_id,
+        date,
+        open_price,
+        high_price,
+        low_price,
+        price,
+        price_24k,
+        price_18k,
+        price_14k,
+        rate_data,
     ):
         """
         Insert or update Gold data in the 'gold_data_import' table.
@@ -105,7 +114,9 @@ class DBConnectorTransform(DBConnector):
             bool -- True if the upsert operation was successful, False otherwise.
         """
         try:
-            logger.debug(f"Upserting gold data for currency_id {currency_id}, date {date}")
+            logger.debug(
+                f"Upserting gold data for currency_id {currency_id}, date {date}"
+            )
 
             if rate_data is None:
                 rate_data = {}
@@ -154,24 +165,28 @@ class DBConnectorTransform(DBConnector):
             """
 
             values = [
-                         currency_id,
-                         date,
-                         open_price,
-                         high_price,
-                         low_price,
-                         price,
-                         price_24k,
-                         price_18k,
-                         price_14k,
-                     ] + rate_values
+                currency_id,
+                date,
+                open_price,
+                high_price,
+                low_price,
+                price,
+                price_24k,
+                price_18k,
+                price_14k,
+            ] + rate_values
 
             self.cursor.execute(query, values)
             self.conn.commit()
 
             if self.cursor.rowcount == 1:
-                logger.debug(f"Inserted new record for currency_id {currency_id}, date {date}")
+                logger.debug(
+                    f"Inserted new record for currency_id {currency_id}, date {date}"
+                )
             elif self.cursor.rowcount == 2:
-                logger.debug(f"Updated record for currency_id {currency_id}, date {date}")
+                logger.debug(
+                    f"Updated record for currency_id {currency_id}, date {date}"
+                )
 
             return True
         except Exception as e:
@@ -179,7 +194,14 @@ class DBConnectorTransform(DBConnector):
             logger.error(f"Error in upsert_gold_data: {str(e)}", exc_info=True)
             return False
 
-    def log_transform(self, currency_id, processed_directory_name, processed_file_name, row_count, status):
+    def log_transform(
+        self,
+        currency_id,
+        processed_directory_name,
+        processed_file_name,
+        row_count,
+        status,
+    ):
         """
         Logs the details of the data transformation process into the 'transform_log' table.
 
@@ -204,7 +226,14 @@ class DBConnectorTransform(DBConnector):
                   INSERT INTO transform.transform_log (batch_date, currency_id, processed_directory_name ,processed_file_name, row_count, status)
                   VALUES (%s, %s, %s, %s, %s, %s)
                   """
-            values = (datetime.today(), currency_id, processed_directory_name, processed_file_name, row_count, status)
+            values = (
+                datetime.today(),
+                currency_id,
+                processed_directory_name,
+                processed_file_name,
+                row_count,
+                status,
+            )
             self.cursor.execute(query, values)
             self.conn.commit()
             logger.info(f"Transform log entry created successfully")
@@ -223,7 +252,7 @@ class DBConnectorTransform(DBConnector):
         Returns:
             bool -- True if the truncate operation was successful, False otherwise.
         """
-        tables = ['transform.btc_data_import', 'transform.gold_data_import']
+        tables = ["transform.btc_data_import", "transform.gold_data_import"]
         logger.info(f"Truncating import tables")
 
         try:
@@ -241,7 +270,9 @@ class DBConnectorTransform(DBConnector):
 
         except Exception as e:
             self.conn.rollback()
-            logger.error(f"Error truncating import tables: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error truncating import tables: {str(e)}", exc_info=True
+            )
             return False
 
     def check_rate_columns(self, rate_data):
@@ -255,32 +286,40 @@ class DBConnectorTransform(DBConnector):
         Returns:
             bool -- True if rate columns were successfully verified/added, False if there was an error.
         """
-        logger.debug(f"Ensuring rate columns exist for currencies: {', '.join(rate_data.keys())}")
+        logger.debug(
+            f"Ensuring rate columns exist for currencies: {', '.join(rate_data.keys())}"
+        )
 
         try:
             columns_added = 0
             columns_already_exist = 0
 
             for currency_code in rate_data.keys():
-                if not re.match(r'^[A-Z]{3}$', currency_code):
+                if not re.match(r"^[A-Z]{3}$", currency_code):
                     raise ValueError(f"Invalid currency code: {currency_code}")
 
                 column_name = f"rate_{currency_code.lower()}"
 
-                self.cursor.execute(f"""
+                self.cursor.execute(
+                    f"""
                     SELECT COUNT(*) 
                     FROM information_schema.columns 
                     WHERE table_schema = 'transform' 
                     AND table_name = 'gold_data_import' 
                     AND column_name = '{column_name}'
-                """)
+                """
+                )
 
                 if self.cursor.fetchone()[0] == 0:
-                    logger.info(f"Adding column {column_name} to gold_data_import table")
-                    self.cursor.execute(f"""
+                    logger.info(
+                        f"Adding column {column_name} to gold_data_import table"
+                    )
+                    self.cursor.execute(
+                        f"""
                         ALTER TABLE transform.gold_data_import 
                         ADD COLUMN {column_name} DECIMAL(18,6) NULL
-                    """)
+                    """
+                    )
                     self.conn.commit()
                     columns_added += 1
                 else:
@@ -288,11 +327,14 @@ class DBConnectorTransform(DBConnector):
 
             if columns_added > 0:
                 logger.info(
-                    f"Rate columns summary: {columns_added} columns added, {columns_already_exist} columns already existed")
+                    f"Rate columns summary: {columns_added} columns added, {columns_already_exist} columns already existed"
+                )
 
             return True
 
         except Exception as e:
             self.conn.rollback()
-            logger.error(f"Error ensuring rate columns exist: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error ensuring rate columns exist: {str(e)}", exc_info=True
+            )
             return False

@@ -12,6 +12,7 @@ class DBConnectorLoad(DBConnector):
         upsert_exchange_rates()  -- Load exchange rates into fact_exchange_rates
         upsert_dim_date()        -- Load dates into dim_date from given source
     """
+
     def upsert_fact_btc(self):
         """
         Inserts new or updated Bitcoin data into the 'fact_btc' table.
@@ -145,7 +146,9 @@ class DBConnectorLoad(DBConnector):
         try:
             currency_id = self.get_currency_by_code(currency_code)
             if not currency_id:
-                logger.warning(f"No currency_id found for {currency_code}, skipping")
+                logger.warning(
+                    f"No currency_id found for {currency_code}, skipping"
+                )
                 return 0
 
             insert_query = f"""
@@ -179,14 +182,19 @@ class DBConnectorLoad(DBConnector):
                      updated_at = NOW(4)
              """
 
-            self.cursor.execute(insert_query, (currency_id, currency_id, currency_id))
+            self.cursor.execute(
+                insert_query, (currency_id, currency_id, currency_id)
+            )
             rows = self.cursor.rowcount
             logger.info(f"Upserted {rows} rows for {currency_code}")
             return rows
 
         except Exception as e:
             self.conn.rollback()
-            logger.error(f"Error upserting exchange rates for {currency_code}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error upserting exchange rates for {currency_code}: {str(e)}",
+                exc_info=True,
+            )
             return 0
 
     def upsert_dim_date(self, source_table):
@@ -255,5 +263,8 @@ class DBConnectorLoad(DBConnector):
 
         except Exception as e:
             self.conn.rollback()
-            logger.error(f"Error upserting dim_date from {source_table}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error upserting dim_date from {source_table}: {str(e)}",
+                exc_info=True,
+            )
             return 0

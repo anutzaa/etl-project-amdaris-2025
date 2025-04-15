@@ -21,6 +21,7 @@ class GoldExtract:
         base_url -- Endpoint URL for API requests
         conn     -- DBConnectorExtract instance for DB operations
     """
+
     def __init__(self, conn: DBConnectorExtract):
         """
         Initialize GoldExtract with database connector and API configuration.
@@ -28,8 +29,8 @@ class GoldExtract:
         Parameters:
             conn -- Instance of DBConnectorExtract for database interactions
         """
-        self.api_key = os.environ.get('GOLD_API_KEY')
-        self.base_url = 'https://gold.g.apised.com/v1/latest'
+        self.api_key = os.environ.get("GOLD_API_KEY")
+        self.base_url = "https://gold.g.apised.com/v1/latest"
         self.conn = conn
         logger.debug("GoldAPI client initialized")
 
@@ -50,13 +51,13 @@ class GoldExtract:
         currencies_param = ",".join(currency_codes)
 
         params = {
-            'metals': 'XAU',
-            'base_currency': symbol,
-            'weight_unit': 'gram',
-            'currencies': currencies_param,
+            "metals": "XAU",
+            "base_currency": symbol,
+            "weight_unit": "gram",
+            "currencies": currencies_param,
         }
 
-        headers = {'x-api-key': self.api_key}
+        headers = {"x-api-key": self.api_key}
 
         logger.debug(
             f"Making API request to {self.base_url} with params: {params}"
@@ -66,7 +67,9 @@ class GoldExtract:
         start_time = start.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
 
         try:
-            response = requests.get(self.base_url, params=params, headers=headers)
+            response = requests.get(
+                self.base_url, params=params, headers=headers
+            )
 
             end = datetime.now()
             end_time = end.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
@@ -74,8 +77,8 @@ class GoldExtract:
             response_code, error_message, data = process_api_response(response)
 
             logger.debug("Saving data to file")
-            file_path, file_created_date, file_last_modified_date = save_to_file(
-                data, 'gold'
+            file_path, file_created_date, file_last_modified_date = (
+                save_to_file(data, "gold")
             )
             row_count = len(data.get("data", {}).get("metal_prices", {}))
             logger.info(
@@ -94,11 +97,16 @@ class GoldExtract:
                     row_count,
                 )
             else:
-                logger.error(f"Could not find currency_id for symbol: {symbol}")
+                logger.error(
+                    f"Could not find currency_id for symbol: {symbol}"
+                )
 
             return start_time, end_time, response_code, error_message
         except Exception as e:
-            logger.error(f"Failed to fetch or process Bitcoin data: {str(e)}", exc_info=True)
+            logger.error(
+                f"Failed to fetch or process Bitcoin data: {str(e)}",
+                exc_info=True,
+            )
             return start_time, None, None, str(e)
 
     def call(self):
@@ -122,13 +130,13 @@ class GoldExtract:
             )
 
             try:
-                start_time, end_time, response_code, error_message = self.get_gold_data(
-                    currency_code
+                start_time, end_time, response_code, error_message = (
+                    self.get_gold_data(currency_code)
                 )
                 logger.debug(f"API response code: {response_code}")
                 self.conn.log_api_import(
                     currency_id,
-                    'XAU',
+                    "XAU",
                     start_time,
                     end_time,
                     response_code,

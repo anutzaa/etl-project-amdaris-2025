@@ -21,6 +21,7 @@ class BitcoinExtract:
         base_url -- Endpoint URL for API requests
         conn     -- DBConnectorExtract instance for DB operations
     """
+
     def __init__(self, conn: DBConnectorExtract):
         """
         Initialize BitcoinExtract with database connector and API configuration.
@@ -28,12 +29,12 @@ class BitcoinExtract:
         Parameters:
             conn -- Instance of DBConnectorExtract for database interactions
         """
-        self.api_key = os.environ.get('BTC_API_KEY')
-        self.base_url = 'https://www.alphavantage.co/query'
+        self.api_key = os.environ.get("BTC_API_KEY")
+        self.base_url = "https://www.alphavantage.co/query"
         self.conn = conn
         logger.debug("BitcoinAPI client initialized")
 
-    def get_bitcoin_data(self, market, function='DIGITAL_CURRENCY_DAILY'):
+    def get_bitcoin_data(self, market, function="DIGITAL_CURRENCY_DAILY"):
         """
         Fetch Bitcoin daily data for a given market and save it to a file.
 
@@ -46,13 +47,15 @@ class BitcoinExtract:
         """
         logger.info(f"Fetching Bitcoin data for market: {market}")
         params = {
-            'function': function,
-            'symbol': 'BTC',
-            'market': market,
-            'apikey': self.api_key,
+            "function": function,
+            "symbol": "BTC",
+            "market": market,
+            "apikey": self.api_key,
         }
 
-        logger.debug(f"Making API request to {self.base_url} with params: {params}")
+        logger.debug(
+            f"Making API request to {self.base_url} with params: {params}"
+        )
 
         start = datetime.now()
         start_time = start.strftime("%Y-%m-%d %H:%M:%S.%f")[:-2]
@@ -67,9 +70,15 @@ class BitcoinExtract:
             response_code, error_message, data = process_api_response(response)
 
             logger.debug("Saving data to file")
-            file_path, file_created_date, file_last_modified_date = save_to_file(data, 'btc')
-            row_count = len(data.get("Time Series (Digital Currency Daily)", {}))
-            logger.info(f"Saved {row_count} Bitcoin data points to {file_path}")
+            file_path, file_created_date, file_last_modified_date = (
+                save_to_file(data, "btc")
+            )
+            row_count = len(
+                data.get("Time Series (Digital Currency Daily)", {})
+            )
+            logger.info(
+                f"Saved {row_count} Bitcoin data points to {file_path}"
+            )
 
             currency_id = self.conn.get_currency_by_code(market)
             if currency_id:
@@ -83,12 +92,17 @@ class BitcoinExtract:
                     row_count,
                 )
             else:
-                logger.error(f"Could not find currency_id for market: {market}")
+                logger.error(
+                    f"Could not find currency_id for market: {market}"
+                )
 
             return start_time, end_time, response_code, error_message
 
         except Exception as e:
-            logger.error(f"Failed to fetch or process Bitcoin data: {str(e)}", exc_info=True)
+            logger.error(
+                f"Failed to fetch or process Bitcoin data: {str(e)}",
+                exc_info=True,
+            )
             return start_time, None, None, str(e)
 
     def call(self):
@@ -114,13 +128,13 @@ class BitcoinExtract:
             )
 
             try:
-                start_time, end_time, response_code, error_message = self.get_bitcoin_data(
-                    currency_code
+                start_time, end_time, response_code, error_message = (
+                    self.get_bitcoin_data(currency_code)
                 )
                 logger.debug(f"API response code: {response_code}")
                 self.conn.log_api_import(
                     currency_id,
-                    'BTC',
+                    "BTC",
                     start_time,
                     end_time,
                     response_code,

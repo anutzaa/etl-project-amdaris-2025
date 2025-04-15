@@ -23,14 +23,14 @@ def setup_logger(app_name, base_dir="../etl"):
         logger.setLevel(logging.DEBUG)
 
         console_formatter = logging.Formatter(
-            '%(asctime)s - %(levelname)s - %(message)s'
+            "%(asctime)s - %(levelname)s - %(message)s"
         )
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(console_formatter)
         console_handler.setLevel(logging.INFO)
 
         file_formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s'
+            "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
         )
         log_file = os.path.join(
             log_dir, f'{app_name}_{datetime.now().strftime("%Y%m%d")}.log'

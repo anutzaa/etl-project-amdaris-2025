@@ -36,7 +36,9 @@ def process_api_response(response):
         return response_code, error_message, data
 
     except Exception as e:
-        logger.error(f"Failed to process API response: {str(e)}", exc_info=True)
+        logger.error(
+            f"Failed to process API response: {str(e)}", exc_info=True
+        )
         raise
 
 
@@ -57,9 +59,9 @@ def save_to_file(data, api_type):
     try:
         logger.debug(f"Saving {api_type} data to file")
 
-        base_dir = '../data/raw/'
+        base_dir = "../data/raw/"
         output_dir = os.path.join(
-            base_dir, 'bitcoin' if api_type == 'btc' else 'gold'
+            base_dir, "bitcoin" if api_type == "btc" else "gold"
         )
         os.makedirs(output_dir, exist_ok=True)
         logger.debug(f"Output directory: {output_dir}")
@@ -68,7 +70,7 @@ def save_to_file(data, api_type):
         file_path = os.path.join(output_dir, file_name)
         logger.debug(f"File path: {file_path}")
 
-        with open(file_path, 'w') as json_file:
+        with open(file_path, "w") as json_file:
             json.dump(data, json_file, indent=4)
         logger.debug(f"Saved new API response to {file_path}")
 
