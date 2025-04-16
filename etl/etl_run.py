@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 
-from extract.main_extract import extract
-from transform.main_transform import transform
-from load.main_load import load
+from extract.main import extract
+from transform.main import transform
+from load.main import load
 
 
 if __name__ == "__main__":

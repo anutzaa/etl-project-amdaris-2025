@@ -2,9 +2,9 @@ import requests
 import os
 from datetime import datetime
 
-from etl.extract.utils_extract import save_to_file, process_api_response
+from etl.extract.utils import save_to_file, process_api_response
 from etl.extract.database_extract import DBConnectorExtract
-from etl.extract.logger_extract import logger
+from etl.extract.logger import logger
 
 
 class GoldExtract:
