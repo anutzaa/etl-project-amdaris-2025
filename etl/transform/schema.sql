@@ -13,7 +13,7 @@ CREATE TABLE transform_log(
     batch_date DATE NOT NULL,
     currency_id INT,
     processed_directory_name VARCHAR(50) NOT NULL,
-    processed_file_name VARCHAR(50) NOT NULL,
+    processed_file_name VARCHAR(50) NOT NULL UNIQUE ,
     row_count INT,
     status VARCHAR(15),
     FOREIGN KEY (currency_id) REFERENCES warehouse.dim_currency(Id) ON DELETE SET NULL

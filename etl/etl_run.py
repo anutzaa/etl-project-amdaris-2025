@@ -8,6 +8,6 @@ from load.main import load
 if __name__ == "__main__":
     load_dotenv()
 
-    extract()
+    # extract()
     transform()
-    load()
+    # load()

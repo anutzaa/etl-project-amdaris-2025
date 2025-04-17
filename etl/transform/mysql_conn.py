@@ -338,3 +338,64 @@ class DBConnectorTransform(DBConnector):
                 f"Error ensuring rate columns exist: {str(e)}", exc_info=True
             )
             return False
+
+    def get_files_to_process(self, data_type):
+        """
+        Retrieves files to process from the import_log table based on data type,
+        excluding files that have already been processed (exist in transform_log).
+
+        Parameters:
+            data_type -- Type of data ('gold' or 'bitcoin')
+
+        Returns:
+            list -- List of dictionaries containing file information
+        """
+        try:
+            logger.info(f"Retrieving {data_type} files to process from import_log (excluding already processed files)")
+
+            directory_pattern = f"%{data_type}%"
+
+            query = """
+        SELECT 
+            il.Id, 
+            il.batch_date, 
+            il.currency_id, 
+            il.import_directory_name, 
+            il.import_file_name,
+            il.file_created_date,
+            il.file_last_modified_date,
+            il.row_count
+        FROM 
+            extract.import_log il
+        LEFT JOIN 
+            transform.transform_log tl ON il.import_file_name = tl.processed_file_name
+        WHERE 
+            il.import_directory_name LIKE %s
+            AND tl.Id IS NULL
+        ORDER BY 
+            il.batch_date DESC
+        """
+
+            self.cursor.execute(query, (directory_pattern,))
+            results = self.cursor.fetchall()
+
+            files_to_process = []
+            for row in results:
+                files_to_process.append({
+                    'id': row[0],
+                    'batch_date': row[1],
+                    'currency_id': row[2],
+                    'directory': row[3],
+                    'filename': row[4],
+                    'created_date': row[5],
+                    'modified_date': row[6],
+                    'row_count': row[7],
+                    'full_path': f"../data/raw/{data_type}/{row[4]}"
+                })
+
+            logger.info(f"Found {len(files_to_process)} new {data_type} files to process")
+            return files_to_process
+
+        except Exception as e:
+            logger.error(f"Error retrieving files to process: {str(e)}", exc_info=True)
+            return []

@@ -4,7 +4,6 @@ from datetime import datetime
 from etl.transform.mysql_conn import DBConnectorTransform
 from etl.transform.utils import (
     move_file,
-    process_file,
     load_json_file,
 )
 from etl.transform.logger import logger
@@ -18,10 +17,9 @@ class GoldTransform:
     Methods:
         __init__()   -- Initializes with a DB connection
         transform()  -- Processes and loads data from a single file
-        call()       -- Triggers processing of all files in the directory
+        call()       -- Triggers processing of all files based on import_log
 
     Instance Variables:
-        directory -- Path to the directory containing raw Gold JSON files
         conn      -- Database connection object (DBConnectorTransform)
 
     """
@@ -33,24 +31,26 @@ class GoldTransform:
         Parameters:
             conn -- DBConnectorTransform instance for DB operations
         """
-        self.directory = "../data/raw/gold/"
         self.conn = conn
 
-    def transform(self, file_path):
+    def transform(self, file_info):
         """
         Process a single Gold data file, transform its contents, and insert into DB.
 
         Parameters:
-            file_path -- Full path to the Gold JSON data file
+            file_info -- Dictionary containing file information from import_log
 
         Returns:
             None
         """
-        logger.info(f"Processing gold file: {file_path}")
+        file_path = file_info['full_path']
+        import_log_id = file_info['id']
+
+        logger.info(f"Processing gold file: {file_path} (import_log_id: {import_log_id})")
         data_type = "gold"
         status = "error"
         processed_count = 0
-        currency_id = None
+        currency_id = file_info['currency_id']
 
         try:
             data_list = load_json_file(file_path)
@@ -60,8 +60,8 @@ class GoldTransform:
 
             for data_obj in data_list:
                 if (
-                    data_obj.get("status") != "success"
-                    or "data" not in data_obj
+                        data_obj.get("status") != "success"
+                        or "data" not in data_obj
                 ):
                     logger.warning(f"Invalid data format in file: {file_path}")
                     continue
@@ -78,7 +78,9 @@ class GoldTransform:
                 logger.debug(
                     f"Processing data for base currency: {base_currency}"
                 )
-                currency_id = self.conn.get_currency_by_code(base_currency)
+
+                if not currency_id:
+                    currency_id = self.conn.get_currency_by_code(base_currency)
 
                 if not currency_id:
                     logger.warning(
@@ -176,14 +178,27 @@ class GoldTransform:
             os.path.dirname(new_file_path),
             os.path.basename(new_file_path),
             processed_count,
-            status,
+            status
         )
 
     def call(self):
         """
-        Trigger the transformation process for all files in the Gold data directory.
+        Trigger the transformation process for gold files based on import_log.
 
         Returns:
             None
         """
-        process_file("Gold", self.directory, self.transform)
+        logger.info("Starting Gold transformation based on import_log")
+
+        files_to_process = self.conn.get_files_to_process("gold")
+
+        if not files_to_process:
+            logger.info("No gold files found in import_log to process")
+            return
+
+        logger.info(f"Processing {len(files_to_process)} gold files")
+
+        for file_info in files_to_process:
+            self.transform(file_info)
+
+        logger.info("Gold transformation complete")

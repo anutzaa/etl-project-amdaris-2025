@@ -49,7 +49,7 @@ CREATE TABLE import_log(
     batch_date DATE NOT NULL,
     currency_id INT,
     import_directory_name VARCHAR(50) NOT NULL,
-    import_file_name VARCHAR(50) NOT NULL,
+    import_file_name VARCHAR(50) NOT NULL UNIQUE,
     file_created_date TIMESTAMP(4) NOT NULL,
     file_last_modified_date TIMESTAMP(4),
     row_count INT,

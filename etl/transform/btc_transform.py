@@ -4,7 +4,6 @@ from datetime import datetime
 from etl.transform.mysql_conn import DBConnectorTransform
 from etl.transform.utils import (
     move_file,
-    process_file,
     load_json_file,
 )
 from etl.transform.logger import logger
@@ -18,10 +17,9 @@ class BitcoinTransform:
     Methods:
         __init__()   -- Initializes with a DB connection
         transform()  -- Processes and loads data from a single file
-        call()       -- Triggers processing of all files in the directory
+        call()       -- Triggers processing of all files based on import_log
 
     Instance Variables:
-        directory -- Path to the directory containing raw Bitcoin JSON files
         conn      -- Database connection object (DBConnectorTransform)
 
     """
@@ -33,24 +31,26 @@ class BitcoinTransform:
         Parameters:
             conn -- DBConnectorTransform instance for DB operations
         """
-        self.directory = "../data/raw/bitcoin/"
         self.conn = conn
 
-    def transform(self, file_path):
+    def transform(self, file_info):
         """
         Process a single Bitcoin data file, transform its contents, and insert into DB.
 
         Parameters:
-            file_path -- Full path to the Bitcoin JSON data file
+            file_info -- Dictionary containing file information from import_log
 
         Returns:
             None
         """
-        logger.info(f"Processing bitcoin file: {file_path}")
+        file_path = file_info['full_path']
+        import_log_id = file_info['id']
+
+        logger.info(f"Processing bitcoin file: {file_path} (import_log_id: {import_log_id})")
         data_type = "bitcoin"
         status = "error"
         processed_count = 0
-        currency_id = None
+        currency_id = file_info['currency_id']
 
         try:
             data_list = load_json_file(file_path)
@@ -74,7 +74,10 @@ class BitcoinTransform:
                 logger.debug(
                     f"Processing data for currency code: {currency_code}"
                 )
-                currency_id = self.conn.get_currency_by_code(currency_code)
+
+                if not currency_id:
+                    currency_id = self.conn.get_currency_by_code(currency_code)
+
                 if not currency_id:
                     logger.warning(
                         f"No currency ID found for code: {currency_code}"
@@ -146,14 +149,27 @@ class BitcoinTransform:
             os.path.dirname(new_file_path),
             os.path.basename(new_file_path),
             processed_count,
-            status,
+            status
         )
 
     def call(self):
         """
-        Trigger the transformation process for all files in the Bitcoin data directory.
+        Trigger the transformation process for bitcoin files based on import_log.
 
         Returns:
             None
         """
-        process_file("Bitcoin", self.directory, self.transform)
+        logger.info("Starting Bitcoin transformation process")
+
+        files_to_process = self.conn.get_files_to_process("bitcoin")
+
+        if not files_to_process:
+            logger.info("No bitcoin files found in import_log to process")
+            return
+
+        logger.info(f"Processing {len(files_to_process)} bitcoin files")
+
+        for file_info in files_to_process:
+            self.transform(file_info)
+
+        logger.info("Bitcoin transformation process complete")

@@ -1,6 +1,6 @@
-from etl.extract.btc_extract import BitcoinExtract
+from etl.extract.btc_api import BitcoinExtract
 from etl.extract.gold_api import GoldExtract
-from etl.extract.database_extract import DBConnectorExtract
+from etl.extract.mysql_conn import DBConnectorExtract
 from etl.extract.logger import logger
 
 
