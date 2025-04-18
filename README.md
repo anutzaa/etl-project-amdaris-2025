@@ -7,6 +7,8 @@ The pipeline extracts data from external APIs, transforms it into a structured f
 - [Overview](#overview)
 
 - [API & Data](#api--data)
+  - [Bitcoin API](#bitcoin-api---alpha-vantage)
+  - [Gold API](#gold-api---apised)
 
 - [Project Structure](#project-structure)
 
