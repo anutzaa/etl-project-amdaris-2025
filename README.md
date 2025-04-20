@@ -46,32 +46,33 @@ Provides daily historical Bitcoin prices and volumes in various markets (e.g., U
 
 ```json
 {
-    "Meta Data": {
-        "1. Information": "Daily Prices and Volumes for Digital Currency",
-        "2. Digital Currency Code": "BTC",
-        "3. Digital Currency Name": "Bitcoin",
-        "4. Market Code": "USD",
-        "5. Market Name": "United States Dollar",
-        "6. Last Refreshed": "2025-04-17 00:00:00",
-        "7. Time Zone": "UTC"
+  "Meta Data": {
+    "1. Information": "Daily Prices and Volumes for Digital Currency",
+    "2. Digital Currency Code": "BTC",
+    "3. Digital Currency Name": "Bitcoin",
+    "4. Market Code": "USD",
+    "5. Market Name": "United States Dollar",
+    "6. Last Refreshed": "2025-04-17 00:00:00",
+    "7. Time Zone": "UTC"
+  },
+  "Time Series (Digital Currency Daily)": {
+    "2025-04-17": {
+      "1. open": "84028.71000000",
+      "2. high": "84118.21000000",
+      "3. low": "83924.19000000",
+      "4. close": "84023.41000000",
+      "5. volume": "106.89082648"
     },
-    "Time Series (Digital Currency Daily)": {
-      "2025-04-17": {
-        "1. open": "84028.71000000",
-        "2. high": "84118.21000000",
-        "3. low": "83924.19000000",
-        "4. close": "84023.41000000",
-        "5. volume": "106.89082648"
-      },
-      "2025-04-16": {
-        "1. open": "83622.52000000",
-        "2. high": "85526.40000000",
-        "3. low": "83088.02000000",
-        "4. close": "84028.72000000",
-        "5. volume": "8243.05901273"
-      },
-      {...}
-    }
+    "2025-04-16": {
+      "1. open": "83622.52000000",
+      "2. high": "85526.40000000",
+      "3. low": "83088.02000000",
+      "4. close": "84028.72000000",
+      "5. volume": "8243.05901273"
+    },
+    {...}
+  }
+}
 
 ```
 
@@ -160,19 +161,19 @@ etl/
 ## Database Schema
 The database is structured into 3 schemas corresponding to each step of ETL.
 
-![Entity-Relationship Diagram](https://i.imgur.com/B21G9P8.png)
+![Entity-Relationship Diagram](https://i.imgur.com/rZgPaa1.png)
 
-**Extract Schema (pink)**
+**Extract Schema**
 - `api`: API source reference table
 - `api_import_log`: Log of API calls
 - `import_log`: Log of imported JSON files
 
-**Transform Schema (yellow)**
+**Transform Schema**
 - `transform_log`: Log of processed files
 - `btc_data_import`: Staging table for Bitcoin data
 - `gold_data_import`: Staging table for Gold data
 
-**Warehouse Schema (blue)**
+**Warehouse Schema**
 - `dim_date`: Date dimension
 - `dim_currency`: Currency dimension
 - `fact_btc`: Bitcoin price facts
@@ -191,7 +192,7 @@ The database is structured into 3 schemas corresponding to each step of ETL.
 
 ### Load Process Flow
 
-![Load Flow Diagram](https://i.imgur.com/cgLBEpB.png)
+![Load Flow Diagram](https://i.imgur.com/wBojxz9.png)
 
 ## Setup
 
@@ -207,7 +208,7 @@ cd etl-project-amdaris-2025
 ```commandline
 python -m venv venv
 .\venv\Scripts\activate
-ni .env
+type nul >.env
 ```
 
 ### 3. Set API keys:
@@ -246,3 +247,22 @@ Run the complete ETL process:
 ```commandline
 python etl_run.py
 ```
+
+## Data Visualizations
+
+The project includes data visualization dashboards built in **Power BI** to monitor ETL performance and analyze Bitcoin and Gold price data.
+
+### ETL Performance Dashboards
+
+The Power BI dashboards provide monitoring of key performance indicators (KPIs) for the ETL pipeline:
+
+- **Extract Metrics**: API response times, success rates, and data volume trends
+- **Transform Metrics**: Processing times, error rates, and data quality indicators
+
+### Financial Data Analysis
+
+The Power BI reports also include visualizations of Bitcoin and Gold price data:
+
+- **Price Trends**: Historical price movements across different currencies
+- **Correlation Analysis**: Relationship between Bitcoin and Gold prices
+- **Currency Comparisons**: How prices vary across different base currencies
