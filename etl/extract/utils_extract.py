@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import json
 
-from etl.extract.logger import logger
+from etl.extract.logger_extract import logger
 
 
 def process_api_response(response):

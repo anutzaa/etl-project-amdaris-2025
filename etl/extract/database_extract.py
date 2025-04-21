@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from etl.commons.database import DBConnector
-from etl.extract.logger import logger
+from etl.extract.logger_extract import logger
 
 
 class DBConnectorExtract(DBConnector):
