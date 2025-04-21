@@ -1,26 +1,19 @@
-import os
-
-from dotenv import load_dotenv
-
 from etl.load.btc_load import BitcoinLoad
 from etl.load.gold_load import GoldLoad
-from etl.load.mysql_conn import MySQLConnectorLoad
+from etl.load.mysql_conn import DBConnectorLoad
 from etl.load.logger import logger
 
 
 def load():
+    """
+    Run the full data loading process.
+
+    This function initializes the database connection, processes Bitcoin and Gold data loading,
+    logs each process, then closes the database connection.
+    """
     logger.info("Starting Load process")
 
-    load_dotenv()
-    logger.debug("Environment variables loaded")
-
-    DB_HOST = os.getenv("DB_HOST")
-    DB_PORT = os.getenv("DB_PORT")
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
-    DB_DATABASE = os.getenv("DB_DATABASE")
-
-    conn = MySQLConnectorLoad(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
+    conn = DBConnectorLoad(logger=logger)
 
     conn.connect()
 

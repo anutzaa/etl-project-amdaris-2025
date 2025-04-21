@@ -1,27 +1,20 @@
-import os
-
-from dotenv import load_dotenv
-
 from etl.transform.btc_transform import BitcoinTransform
 from etl.transform.gold_transform import GoldTransform
-from etl.transform.mysql_conn import MySQLConnectorTransform
+from etl.transform.mysql_conn import DBConnectorTransform
 from etl.transform.logger import logger
 
 
 def transform():
+    """
+     Run the full data transformation process.
+
+     This function connects to the database, processes all Bitcoin and Gold files,
+     logs each transformation, and closes the connection.
+    """
     logger.info("Starting Transform process")
 
-    load_dotenv()
-    logger.debug("Environment variables loaded")
-
-    DB_HOST = os.getenv("DB_HOST")
-    DB_PORT = os.getenv("DB_PORT")
-    DB_USER = os.getenv("DB_USER")
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
-    DB_DATABASE = os.getenv("DB_DATABASE")
-
     logger.info("Connecting to MySQL database")
-    conn = MySQLConnectorTransform(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, database=DB_DATABASE)
+    conn = DBConnectorTransform(logger=logger)
 
     conn.connect()
     conn.truncate_import_tables()
