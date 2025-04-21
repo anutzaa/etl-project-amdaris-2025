@@ -154,13 +154,12 @@ etl-project-amdaris-2025/
 │   │   ├── logger_transform.py       # Transform-specific logger
 │   │   └── main_transform.py         # Transform process entry point
 │   └── load/
-│       ├── btc_load.py       # Bitcoin data loading
-│       ├── gold_load.py      # Gold data loading
-│       ├── mysql_conn.py     # Load database operations
-│       ├── logger.py         # Load-specific logger
-│       └── main.py           # Load process entry point
-├── run.py                    # Run the application
-
+│       ├── btc_load.py               # Bitcoin data loading
+│       ├── gold_load.py              # Gold data loading
+│       ├── database_load.py          # Load database operations
+│       ├── logger_load.py            # Load-specific logger
+│       └── main_load.py              # Load process entry point
+└── run.py                            # Run the application
 ```
 
 ## Database Schema

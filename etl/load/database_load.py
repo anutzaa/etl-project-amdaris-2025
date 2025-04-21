@@ -1,5 +1,5 @@
 from etl.commons.database import DBConnector
-from etl.load.logger import logger
+from etl.load.logger_load import logger
 
 
 class DBConnectorLoad(DBConnector):
