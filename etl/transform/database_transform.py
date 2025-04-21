@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 
 from etl.commons.database import DBConnector
-from etl.transform.logger import logger
+from etl.transform.logger_transform import logger
 
 
 class DBConnectorTransform(DBConnector):

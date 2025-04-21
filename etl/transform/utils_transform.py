@@ -2,7 +2,7 @@ import json
 import os
 import shutil
 
-from etl.transform.logger import logger
+from etl.transform.logger_transform import logger
 
 
 def move_file(status, data_type, file_path):

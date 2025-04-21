@@ -137,22 +137,22 @@ Returns live gold prices in different karats and exchange rates for multiple cur
 etl-project-amdaris-2025/
 ├── etl/
 │   ├── commons/
-│   │   ├── database.py       # Base database connector
-│   │   └── logger.py         # Logging configuration
+│   │   ├── database.py               # Base database connector
+│   │   └── logger.py                 # Logging configuration
 │   ├── extract/
-│   │   ├── btc_extract.py        # Bitcoin API client
-│   │   ├── gold_extract.py       # Gold API client
-│   │   ├── database_extract.py     # Extract database operations
+│   │   ├── btc_extract.py            # Bitcoin API client
+│   │   ├── gold_extract.py           # Gold API client
+│   │   ├── database_extract.py       # Extract database operations
 │   │   ├── utils_extract.py          # Extract utilities
 │   │   ├── logger_extract.py         # Extract-specific logger
 │   │   └── main_extract.py           # Extract process entry point
 │   ├── transform/
-│   │   ├── btc_transform.py  # Bitcoin data transformation
-│   │   ├── gold_transform.py # Gold data transformation
-│   │   ├── mysql_conn.py     # Transform database operations
-│   │   ├── utils.py          # Transform utilities
-│   │   ├── logger.py         # Transform-specific logger
-│   │   └── main.py           # Transform process entry point
+│   │   ├── btc_transform.py          # Bitcoin data transformation
+│   │   ├── gold_transform.py         # Gold data transformation
+│   │   ├── database_transform.py     # Transform database operations
+│   │   ├── utils_transform.py        # Transform utilities
+│   │   ├── logger_transform.py       # Transform-specific logger
+│   │   └── main_transform.py         # Transform process entry point
 │   └── load/
 │       ├── btc_load.py       # Bitcoin data loading
 │       ├── gold_load.py      # Gold data loading
