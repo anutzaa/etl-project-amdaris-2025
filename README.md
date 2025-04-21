@@ -23,6 +23,10 @@ The pipeline extracts data from external APIs, transforms it into a structured f
 
 - [Usage](#usage)
 
+- [Data Visualizations](#data-visualizations)
+  - [ETL Performance](#etl-performance-dashboards)
+  - [Financial Data Analysis](#financial-data-analysis)
+
 ## Overview
 This ETL pipeline collects Bitcoin and Gold price data for multiple currencies, processes it, and stores it in a structured data warehouse. The system is designed to be efficient, maintainable, and scalable, with comprehensive logging at each stage of the process.
 
@@ -245,8 +249,21 @@ mysql -u username -p password < load/schema.sql
 
 Run the complete ETL process:
 ```commandline
-python etl_run.py
+python -m run all
 ```
+To run ETL steps independently:
+  - Extract:
+  ```commandline
+    python -m run extract
+   ```
+  - Transform:
+  ```commandline
+    python -m run transform
+   ```
+  - Load:
+  ```commandline
+    python -m run load
+   ```
 
 ## Data Visualizations
 
