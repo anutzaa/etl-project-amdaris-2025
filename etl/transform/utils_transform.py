@@ -21,7 +21,7 @@ def move_file(status, data_type, file_path):
         f"Moving file {file_path} to {status} directory for {data_type}"
     )
     try:
-        base_dir = os.path.normpath("../data")
+        base_dir = os.path.normpath("data")
         logger.debug(f"Base directory: {base_dir}")
 
         target_dir = os.path.join(base_dir, status, data_type)

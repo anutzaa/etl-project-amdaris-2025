@@ -47,7 +47,7 @@ def save_to_file(data, api_type):
     Save API data to a JSON file in a type-specific directory.
 
     The file is written to a path based on the type of API (e.g., 'btc' or 'gold'),
-    under the '../data/raw/' directory. Returns path and timestamps.
+    under the 'data/raw/' directory. Returns path and timestamps.
 
     Parameters:
         data     -- Dictionary data to be written to file
@@ -59,7 +59,7 @@ def save_to_file(data, api_type):
     try:
         logger.debug(f"Saving {api_type} data to file")
 
-        base_dir = "../data/raw/"
+        base_dir = os.path.normpath(os.path.join("data", "raw"))
         output_dir = os.path.join(
             base_dir, "bitcoin" if api_type == "btc" else "gold"
         )

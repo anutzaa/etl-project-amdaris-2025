@@ -390,7 +390,7 @@ class DBConnectorTransform(DBConnector):
                     'created_date': row[5],
                     'modified_date': row[6],
                     'row_count': row[7],
-                    'full_path': f"../data/raw/{data_type}/{row[4]}"
+                    'full_path': f"{row[3]}\\{row[4]}"
                 })
 
             logger.info(f"Found {len(files_to_process)} new {data_type} files to process")
@@ -399,3 +399,4 @@ class DBConnectorTransform(DBConnector):
         except Exception as e:
             logger.error(f"Error retrieving files to process: {str(e)}", exc_info=True)
             return []
+
