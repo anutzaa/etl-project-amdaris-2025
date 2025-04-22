@@ -22,4 +22,4 @@ if __name__ == "__main__":
     if func:
         func()
     else:
-        print("Usage: python -m etl.etl_run [extract|transform|load|all]")
+        print("Usage: python -m run [extract|transform|load|all]")
