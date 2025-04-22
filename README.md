@@ -362,7 +362,7 @@ The project includes data visualization dashboards built in **Power BI** to moni
 The Power BI dashboards provide monitoring of key performance indicators (KPIs) for the ETL pipeline:
 
 - **Extract Metrics**: API response times, success rates, and data volume trends
-- **Transform Metrics**: Processing times, error rates, and data quality indicators
+- **Transform Metrics**: Processed file counts, error rates, and data quality indicators
 
 ### Financial Data Analysis
 
@@ -370,4 +370,3 @@ The Power BI reports also include visualizations of Bitcoin and Gold price data:
 
 - **Price Trends**: Historical price movements across different currencies
 - **Correlation Analysis**: Relationship between Bitcoin and Gold prices
-- **Currency Comparisons**: How prices vary across different base currencies
