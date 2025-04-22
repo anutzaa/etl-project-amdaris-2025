@@ -47,7 +47,7 @@ This project uses two external APIs.
 Alpha Vantage provides daily historical Bitcoin prices and volumes in various currency markets. This project uses the `DIGITAL_CURRENCY_DAILY` function to retrieve time-series data.
 
 **Endpoint:**
-```http request
+```
 https://www.alphavantage.co/query
 ```
 **Request Parameters:**
@@ -61,7 +61,7 @@ https://www.alphavantage.co/query
 
 **Sample Request:**
 
-```http request
+```
 https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey=btc_api_key
 ```
 
@@ -115,7 +115,7 @@ Alpha Vantage returns an error message if the request is invalid, but with an HT
 APISED's Gold API provides real-time gold prices in different karats and exchange rates for multiple currencies.
 
 **Endpoint:**
-```http request
+```
 https://gold.g.apised.com/v1/latest
 ```
 **Request Parameters:**
@@ -135,7 +135,7 @@ https://gold.g.apised.com/v1/latest
 
 **Sample Request:**
 
-```http request
+```
 https://gold.g.apised.com/v1/latest?metals=XAU&base_currency=GBP&weight_unit=gram&currencies=EUR,RON,GBP,USD,TRY,CAD,CHF,UAH,BGN,AED
 ```
 
