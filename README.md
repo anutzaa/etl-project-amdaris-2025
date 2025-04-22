@@ -215,33 +215,39 @@ etl-project-amdaris-2025/
 │   │   └── gold/                     # Gold data
 ├── etl/
 │   ├── commons/
-│   │   ├── database.py               # Base database connector
-│   │   └── logger.py                 # Logging configuration
+│   │   ├── database.py               # Base database connector (shared)
+│   │   └── logger.py                 # Logging configuration (shared)
 │   ├── extract/
 │   │   ├── btc_extract.py            # Bitcoin API client
 │   │   ├── gold_extract.py           # Gold API client
 │   │   ├── database_extract.py       # Extract database operations
-│   │   ├── utils_extract.py          # Extract utilities
-│   │   ├── logger_extract.py         # Extract-specific logger
-│   │   └── main_extract.py           # Extract process entry point
+│   │   ├── utils_extract.py          # Extract helper functions
+│   │   ├── logger_extract.py         # Extract-specific logger setup
+│   │   ├── main_extract.py           # Extract process entry point
+│   │   ├── schema_extract.sql        # SQL schema for extract stage
+│   │   └── logs/                     # Log files generated during Extract step
 │   ├── transform/
-│   │   ├── btc_transform.py          # Bitcoin data transformation
-│   │   ├── gold_transform.py         # Gold data transformation
+│   │   ├── btc_transform.py          # Bitcoin data transformation logic
+│   │   ├── gold_transform.py         # Gold data transformation logic
 │   │   ├── database_transform.py     # Transform database operations
-│   │   ├── utils_transform.py        # Transform utilities
-│   │   ├── logger_transform.py       # Transform-specific logger
-│   │   └── main_transform.py         # Transform process entry point
+│   │   ├── utils_transform.py        # Transform helper functions
+│   │   ├── logger_transform.py       # Transform-specific logger setup
+│   │   ├── main_transform.py         # Transform process entry point
+│   │   ├── schema_transform.sql      # SQL schema for transform stage
+│   │   └── logs/                     # Log files generated during Transform step
 │   └── load/
-│       ├── btc_load.py               # Bitcoin data loading
-│       ├── gold_load.py              # Gold data loading
+│       ├── btc_load.py               # Load Bitcoin data to DB
+│       ├── gold_load.py              # Load Gold data to DB
 │       ├── database_load.py          # Load database operations
-│       ├── logger_load.py            # Load-specific logger
-│       └── main_load.py              # Load process entry point
+│       ├── logger_load.py            # Load-specific logger setup
+│       ├── main_load.py              # Load process entry point
+│       ├── schema_load.sql           # SQL schema for load stage
+│       └── logs/                     # Log files generated during Load step
 ├── .env                              # Environment variables
 ├── .gitignore                        # Git ignored files
 ├── README.md                         # Project description and usage
 ├── requirements.txt                  # Python dependencies
-└── run.py                            # Run the application
+└── run.py                            # Entry point to run the ETL pipeline
 ```
 
 ## Database Schema
@@ -323,8 +329,8 @@ pip install -r requirements.txt
 ### 5. Set up the database:
 ```commandline
 mysql -u username -p password < extract/schema_extract.sql
-mysql -u username -p password < transform/schema_extract.sql
-mysql -u username -p password < load/schema_extract.sql
+mysql -u username -p password < transform/schema_transform.sql
+mysql -u username -p password < load/schema_load.sql
 ```
 
 ## Usage
