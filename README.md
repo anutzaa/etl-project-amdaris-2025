@@ -44,9 +44,30 @@ This project uses two external APIs.
 
 ### Bitcoin API - [Alpha Vantage](https://www.alphavantage.co)
 
-Provides daily historical Bitcoin prices and volumes in various markets (e.g., USD). The API function `DIGITAL_CURRENCY_DAILY` returns time-series JSON with open, high, low, close, and volume data for the past 350 days.
+Alpha Vantage provides daily historical Bitcoin prices and volumes in various currency markets. This project uses the `DIGITAL_CURRENCY_DAILY` function to retrieve time-series data.
 
-**Sample response:**
+**Endpoint:**
+```http request
+https://www.alphavantage.co/query
+```
+**Request Parameters:**
+
+| Parameter     | Description                | Example Value          |
+|---------------|----------------------------|------------------------|
+| **function**  | API function to call       | DIGITAL_CURRENCY_DAILY |
+| **symbol**    | Digital currency symbol    | BTC                    |
+| **market**    | Market/currency code       | USD                    |
+| **apikey**    | Your Alpha Vantage API key | btc_api_key            |
+
+**Sample Request:**
+
+```http request
+https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=USD&apikey=btc_api_key
+```
+
+**Successful Response**
+
+The API returns a JSON object containing metadata and daily price data for the past 350 days:
 
 ```json
 {
@@ -77,14 +98,48 @@ Provides daily historical Bitcoin prices and volumes in various markets (e.g., U
     {...}
   }
 }
-
 ```
+**Error Response**
+
+Alpha Vantage returns an error message if the request is invalid, but with an HTTP response code 200:
+
+```json
+{
+    "Error Message": "Invalid API call. Please retry or visit the documentation (https://www.alphavantage.co/documentation/) for DIGITAL_CURRENCY_DAILY."
+}
+```
+
 
 ### Gold API - [APISED](https://apised.com/)
 
-Returns live gold prices in different karats and exchange rates for multiple currencies against a base currency. The data includes detailed price metrics and currency conversion values.
+APISED's Gold API provides real-time gold prices in different karats and exchange rates for multiple currencies.
 
-**Sample response:**
+**Endpoint:**
+```http request
+https://gold.g.apised.com/v1/latest
+```
+**Request Parameters:**
+
+| Parameter         | Description                                           | Example Value                           |
+|-------------------|-------------------------------------------------------|-----------------------------------------|
+| **metals**        | Metal code to retrieve                                | XAU                                     |
+| **base_currency** | Base currency for prices                              | USD                                     |
+| **weight_unit**   | Unit of weight                                        | gram                                    |
+| **currencies**    | Comma-separated list of currencies for exchange rates | USD,EUR,GBP,AED,BGN,CAD,CHF,RON,TRY,UAH |
+
+**Headers:**
+
+| Header        | Description         | Example Value |
+|---------------|---------------------|---------------|
+| **x-api-key** | Your APISED API key | gold_api_key  |
+
+**Sample Request:**
+
+```http request
+https://gold.g.apised.com/v1/latest?metals=XAU&base_currency=GBP&weight_unit=gram&currencies=EUR,RON,GBP,USD,TRY,CAD,CHF,UAH,BGN,AED
+```
+
+**Successful Response**
 
 ```json
 {
@@ -132,9 +187,32 @@ Returns live gold prices in different karats and exchange rates for multiple cur
 }
 ```
 
+**Error Response**
+
+The Gold API returns a 400 status code with a descriptive error message when parameters are invalid:
+
+```json
+{
+    "status": "fail",
+    "message": [
+        "currencies: currencies parameter contains a value that is not supported"
+    ]
+}
+```
+
 ## Project Structure
 ```
 etl-project-amdaris-2025/
+├── data/
+│   ├── error/                        # Contains JSON files with failed records
+│   │   ├── bitcoin/                  # Bitcoin data
+│   │   └── gold/                     # Gold data
+│   ├── processed/                    # Contains JSON files with processed records
+│   │   ├── bitcoin/                  # Bitcoin data
+│   │   └── gold/                     # Gold data
+│   ├── raw/                          # Contains JSON files with raw API responses
+│   │   ├── bitcoin/                  # Bitcoin data
+│   │   └── gold/                     # Gold data
 ├── etl/
 │   ├── commons/
 │   │   ├── database.py               # Base database connector
@@ -159,6 +237,10 @@ etl-project-amdaris-2025/
 │       ├── database_load.py          # Load database operations
 │       ├── logger_load.py            # Load-specific logger
 │       └── main_load.py              # Load process entry point
+├── .env                              # Environment variables
+├── .gitignore                        # Git ignored files
+├── README.md                         # Project description and usage
+├── requirements.txt                  # Python dependencies
 └── run.py                            # Run the application
 ```
 
