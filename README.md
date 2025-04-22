@@ -1,7 +1,7 @@
 # Bitcoin & Gold Prices ETL Pipeline
 
 This project implements an ETL pipeline for Bitcoin and Gold price data for different currencies. 
-The pipeline extracts data from external APIs, transforms it into a structured format, and loads it into a data warehouse for analysis.
+The pipeline extracts data from external APIs, transforms it into a structured format and inserts it into a staging area, and further loads it into a data warehouse ready for analysis.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -28,15 +28,15 @@ The pipeline extracts data from external APIs, transforms it into a structured f
   - [Financial Data Analysis](#financial-data-analysis)
 
 ## Overview
-This ETL pipeline collects Bitcoin and Gold price data for multiple currencies, processes it, and stores it in a structured data warehouse. The system is designed to be efficient, maintainable, and scalable, with comprehensive logging at each stage of the process.
+The ETL pipeline collects Bitcoin and Gold price data for multiple currencies, processes it, and stores it in a data warehouse.
 
-Key features:
+**Key features:**
 
-- Extracts data from Bitcoin and Gold API
-- Transforms raw data into structured formats
+- Extracts data from Bitcoin and Gold APIs
+- Transforms raw data into structured formats in staging-area tables
 - Loads data into a **star-schema** data warehouse
 - Maintains audit trails through logging
-- Optimized to process only new or changed data
+- Optimized to load only new or changed data
 
 ## API & Data
 
@@ -328,9 +328,9 @@ pip install -r requirements.txt
 
 ### 5. Set up the database:
 ```commandline
-mysql -u username -p password < extract/schema_extract.sql
-mysql -u username -p password < transform/schema_transform.sql
-mysql -u username -p password < load/schema_load.sql
+mysql -u username -p password < etl/extract/schema_extract.sql
+mysql -u username -p password < etl/transform/schema_transform.sql
+mysql -u username -p password < etl/load/schema_load.sql
 ```
 
 ## Usage
