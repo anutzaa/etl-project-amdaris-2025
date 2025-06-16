@@ -1,0 +1,9 @@
+{
+	"name": "ana-test-data-factory",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "06fa5f4c-1f29-425e-aeca-116f8f00da62",
+		"tenantId": "544f8ac3-ce4c-47d1-9b72-284ac54b8d1c"
+	}
+}
